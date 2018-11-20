@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.telephony.TelephonyManager
+import java.util.*
 
 
 class CallReciever : BroadcastReceiver(){
@@ -13,6 +14,8 @@ class CallReciever : BroadcastReceiver(){
     private var directCallState: Int = DirectionCallState.MISSING
     private var lastState: Int = TelephonyManager.CALL_STATE_IDLE
     private var talkState: Int = TalkStates.IDLE
+    lateinit var startTalk: Date
+    lateinit var stopTalk: Date
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if(intent!!.action == IntentActions.PHONE_STAGE_CHANGED && intent.hasExtra(incomingNumber)){
@@ -42,9 +45,11 @@ class CallReciever : BroadcastReceiver(){
                         when(directCallState){
                             DirectionCallState.INCOMING -> { //TODO: Collapse two cases
                                 talkState = TalkStates.STOP
+                                stopTalk = Date()
                             }
                             DirectionCallState.OUTGOING -> {
                                 talkState = TalkStates.STOP
+                                stopTalk = Date()
                             }
                         }
                     }
@@ -55,10 +60,12 @@ class CallReciever : BroadcastReceiver(){
                     CallStates.RINGING -> {
                         directCallState = DirectionCallState.INCOMING
                         talkState = TalkStates.ANSWER
+                        startTalk = Date()
                     }
                     CallStates.IDLE -> {
                         directCallState = DirectionCallState.OUTGOING
                         talkState = TalkStates.START
+                        startTalk = Date()
                     }
                 }
             }
