@@ -1,4 +1,4 @@
-package com.media.dmitry68.callrecorder.reciever
+package com.media.dmitry68.callrecorder.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -7,7 +7,7 @@ import android.telephony.TelephonyManager
 import java.util.*
 
 
-class CallReciever : BroadcastReceiver(){
+class CallReceiver : BroadcastReceiver(){
     private val incomingNumber = TelephonyManager.EXTRA_INCOMING_NUMBER
     private var number: String? = null
     private var statePhone: Int? = null

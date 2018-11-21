@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CallRecorder</string>
+    <string name="message_rationale_permission_phone_state">Phone permission is needed to record call</string>
 </resources>
