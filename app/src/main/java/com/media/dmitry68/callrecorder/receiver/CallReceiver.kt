@@ -18,7 +18,7 @@ class CallReceiver : BroadcastReceiver(){
     lateinit var stopTalk: Date
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        if(intent!!.action == IntentActions.PHONE_STAGE_CHANGED && intent.hasExtra(incomingNumber)){
+        if(intent!!.action == IntentActions.PHONE_STAGE_CHANGED && intent.hasExtra(String)){
             val telephonyManager = context!!.getSystemService(Context.TELEPHONY_SERVICE)
             if (telephonyManager is TelephonyManager) {
                 number = intent.getStringExtra(incomingNumber)

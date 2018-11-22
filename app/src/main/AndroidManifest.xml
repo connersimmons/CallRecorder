@@ -3,6 +3,7 @@
           package="com.media.dmitry68.callrecorder">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
 
 
     <application
@@ -18,6 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <service android:name=".service.CallService"/>
     </application>
 
 </manifest>

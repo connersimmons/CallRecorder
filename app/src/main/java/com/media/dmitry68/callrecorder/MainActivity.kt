@@ -1,15 +1,14 @@
 package com.media.dmitry68.callrecorder
 
 import android.Manifest
-import android.content.IntentFilter
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.widget.Toast
-import com.media.dmitry68.callrecorder.receiver.CallReceiver
-import com.media.dmitry68.callrecorder.receiver.IntentActions
+import com.media.dmitry68.callrecorder.service.CallService
 import java.lang.RuntimeException
 
 
@@ -22,14 +21,19 @@ class MainActivity : AppCompatActivity() {
         if (!checkPermission())
             requestPermission()
         else
-            startCallReceiver()
+            startCallService()
+    }
+
+    private fun startCallService() {
+        val intent = Intent().apply { setClass(applicationContext, CallService::class.java) }
+        startService(intent)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode){
             MY_PERMISSION_READ_PHONE_STATE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    startCallReceiver()
+                    startCallService()
                 }
                 return
             }
@@ -50,11 +54,4 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkPermission() = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED
-
-    private fun startCallReceiver() {
-        val callReceiver = CallReceiver()
-        val intentFilterPhoneStateChange = IntentFilter(IntentActions.PHONE_STAGE_CHANGED)
-
-        registerReceiver(callReceiver, intentFilterPhoneStateChange)
-    }
 }
