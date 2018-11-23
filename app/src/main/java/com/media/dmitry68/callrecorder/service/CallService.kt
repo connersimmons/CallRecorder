@@ -8,6 +8,8 @@ import com.media.dmitry68.callrecorder.receiver.CallReceiver
 import com.media.dmitry68.callrecorder.receiver.IntentActions
 
 class CallService : Service(){
+    private var callReceiver = CallReceiver()
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -17,10 +19,17 @@ class CallService : Service(){
         return Service.START_REDELIVER_INTENT
     }
 
-    private fun startCallReceiver() {
-        val callReceiver = CallReceiver()
-        val intentFilterPhoneStateChange = IntentFilter(IntentActions.PHONE_STAGE_CHANGED)
+    override fun onDestroy() {
+        super.onDestroy()
+        stopCallReceiver()
+    }
 
+    private fun stopCallReceiver() {
+        unregisterReceiver(callReceiver)
+    }
+
+    private fun startCallReceiver() {
+        val intentFilterPhoneStateChange = IntentFilter(IntentActions.PHONE_STAGE_CHANGED)
         registerReceiver(callReceiver, intentFilterPhoneStateChange)
     }
 }

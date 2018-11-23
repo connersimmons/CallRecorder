@@ -13,7 +13,7 @@ import java.lang.RuntimeException
 
 
 class MainActivity : AppCompatActivity() {
-    val MY_PERMISSION_READ_PHONE_STATE = 1
+    private val MY_PERMISSION_READ_PHONE_STATE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +48,14 @@ class MainActivity : AppCompatActivity() {
             val message = R.string.message_rationale_permission_phone_state
             Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show() //TODO: redesign this toast to Snackbar
         } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE),
-                MY_PERMISSION_READ_PHONE_STATE)
+            requestPermissionInMainActivity()
         }
     }
 
-    private fun checkPermission() = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED
+    private fun requestPermissionInMainActivity(){
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE),
+            MY_PERMISSION_READ_PHONE_STATE)
+    }
+
+    private fun checkPermission() = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
 }

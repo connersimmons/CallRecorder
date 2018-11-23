@@ -1,4 +1,4 @@
-package com.media.dmitry68.callrecorder.receiver
+package com.media.dmitry68.callrecorder.stateCall
 
 internal object DirectionCallState {
     const val INCOMING = 1
