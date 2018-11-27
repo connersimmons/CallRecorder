@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.widget.Toast
@@ -18,10 +19,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        loadPreferences()
         if (!checkPermission())
             requestPermission()
         else
             startCallService()
+    }
+
+    private fun loadPreferences() {
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
+        //TODO: actionmenu
     }
 
     private fun startCallService() {
@@ -52,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestPermissionInMainActivity(){
+    private inline fun requestPermissionInMainActivity(){
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE),
             MY_PERMISSION_READ_PHONE_STATE)
     }
