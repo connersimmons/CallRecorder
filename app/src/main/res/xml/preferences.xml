@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+            android:title="@string/pref_category_name_file">
+        <EditTextPreference
+                android:defaultValue="@string/pref_file_name_default"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="@string/pref_file_name"
+                android:key="pref_file_name"/>
+        <CheckBoxPreference
+                android:defaultValue="true"
+                android:title="@string/pref_flag_show_direction"
+                android:key="pref_flag_show_direction_call"/>
+        <CheckBoxPreference
+                android:defaultValue="true"
+                android:title="@string/pref_flag_show_number"
+                android:key="pref_flag_show_number"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

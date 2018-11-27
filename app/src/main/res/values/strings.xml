@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">CallRecorder</string>
     <string name="message_rationale_permission_phone_state">Phone permission is needed to record call</string>
+    <string name="pref_file_name">Prefix</string>
+    <string name="pref_file_name_default">Record</string>
+    <string name="pref_flag_show_direction">Show direction call</string>
+    <string name="pref_category_name_file">Name of File</string>
+    <string name="pref_flag_show_number">Show Phone number</string>
 </resources>

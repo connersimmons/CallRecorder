@@ -1,8 +1,19 @@
 package com.media.dmitry68.callrecorder.recorder
 
-class Recorder {
+import android.util.Log
 
-    private fun startRecord(){}
+class Recorder {
+    companion object {
+        var flagStarted = false
+    }
+
+    private val TAG
+    private fun startRecord(){
+        if (flagStarted){
+            stopRecord()
+            Log.d(TAG, "RuntimeException: stop() is called immediately after start()")
+        }
+    }
 
     private fun stopRecord(){}
 }
