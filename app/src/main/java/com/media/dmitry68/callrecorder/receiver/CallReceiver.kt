@@ -3,7 +3,6 @@ package com.media.dmitry68.callrecorder.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.telecom.Call
 import android.telephony.TelephonyManager
 import android.util.Log
 import com.media.dmitry68.callrecorder.stateCall.CallStates
@@ -14,14 +13,7 @@ import java.util.*
 
 class CallReceiver : BroadcastReceiver(){
     companion object {
-        private var number: String? = null
-        private var statePhone: Int = CallStates.IDLE
         private var lastState: Int = CallStates.IDLE
-        private var directCallState: Int = DirectionCallState.MISSING
-        private var talkState: Int = TalkStates.IDLE
-        lateinit var startTalk: Date
-        lateinit var stopTalk: Date
-
         private val caller: Caller = Caller()
     }
     private val TAG = "LOG_Receiver"
@@ -32,10 +24,11 @@ class CallReceiver : BroadcastReceiver(){
         if(intent!!.action == IntentActions.PHONE_STAGE_CHANGED && intent.hasExtra(incomingNumber)){
             val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE)
             if (telephonyManager is TelephonyManager) {
-                number = intent.getStringExtra(incomingNumber)
-                statePhone = telephonyManager.callState
-                onCallStateChanged(statePhone)
-
+                with(caller){
+                    number = intent.getStringExtra(incomingNumber)
+                    statePhone = telephonyManager.callState
+                }
+                onCallStateChanged(caller.statePhone)
             }
         }
     }
@@ -54,7 +47,7 @@ class CallReceiver : BroadcastReceiver(){
                         Log.d(TAG, "missing incoming call")
                     }
                     CallStates.OFFHOOK -> {
-                        when(directCallState){
+                        when(caller.directCallState){
                             DirectionCallState.INCOMING -> { //TODO: Collapse two cases
                                 with(caller){
                                     talkState = TalkStates.STOP
@@ -81,7 +74,7 @@ class CallReceiver : BroadcastReceiver(){
                             talkState = TalkStates.ANSWER
                             startTalk = Date()
                         }
-                        Log.d(TAG, "offhook incoming call $number")
+                        Log.d(TAG, "offhook incoming call ${caller.number}")
                     }
                     CallStates.IDLE -> {
                         with(caller) {
@@ -89,7 +82,7 @@ class CallReceiver : BroadcastReceiver(){
                             talkState = TalkStates.START
                             startTalk = Date()
                         }
-                        Log.d(TAG, "offhook outgoing call $number")
+                        Log.d(TAG, "offhook outgoing call ${caller.number}")
                     }
                 }
             }
@@ -98,7 +91,7 @@ class CallReceiver : BroadcastReceiver(){
                     directCallState = DirectionCallState.INCOMING
                     talkState = TalkStates.IDLE
                 }
-                Log.d(TAG, "ringing incoming call $number")
+                Log.d(TAG, "ringing incoming call ${caller.number}")
             }
         }
         lastState = statePhone
