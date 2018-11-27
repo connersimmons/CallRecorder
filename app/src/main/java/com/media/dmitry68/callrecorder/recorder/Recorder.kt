@@ -7,7 +7,7 @@ class Recorder {
         var flagStarted = false
     }
 
-    private val TAG
+    private val TAG = "LOG_Receiver"
     private fun startRecord(){
         if (flagStarted){
             stopRecord()
