@@ -5,30 +5,36 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.preference.PreferenceManager
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
+import com.media.dmitry68.callrecorder.permissions.PermissionManager
 import com.media.dmitry68.callrecorder.service.CallService
-import java.lang.RuntimeException
 
 
 class MainActivity : AppCompatActivity() {
-    private val MY_PERMISSION_READ_PHONE_STATE = 1
+    private val TAG = "LOG_Receiver"
+    private val permissionManager = PermissionManager(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        loadPreferences()
-        if (!checkPermission())
-            requestPermission()
+        Log.d(TAG, "Create MainActivity")
+        if (!permissionManager.checkPermission())
+            permissionManager.requestPermission()
         else
             startCallService()
     }
 
-    private fun loadPreferences() {
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
-        //TODO: actionmenu
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "Resume MainActivity")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "Pause MainActivity")
     }
 
     private fun startCallService() {
@@ -36,33 +42,51 @@ class MainActivity : AppCompatActivity() {
         startService(intent)
     }
 
+    //TODO: move requestpermission result to permissionManager
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode){
-            MY_PERMISSION_READ_PHONE_STATE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    startCallService()
+        when(requestCode){
+            PermissionManager.REQUEST_CODE_ASK_PERMISSIONS -> {
+                val perms = HashMap<String, Int>()
+                with(perms){
+                    put(Manifest.permission.READ_PHONE_STATE, PackageManager.PERMISSION_GRANTED)
+                    put(Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED)
+                    put(Manifest.permission.RECORD_AUDIO, PackageManager.PERMISSION_GRANTED)
                 }
-                return
+                for (i in 0 until permissions.size)
+                    perms[permissions[i]] = grantResults[i]
+                if (perms[Manifest.permission.READ_PHONE_STATE] == PackageManager.PERMISSION_GRANTED
+                    && perms[Manifest.permission.WRITE_EXTERNAL_STORAGE] == PackageManager.PERMISSION_GRANTED
+                    && perms[Manifest.permission.RECORD_AUDIO] == PackageManager.PERMISSION_GRANTED) {
+                    startCallService()
+                } else {
+                    Toast.makeText(this, R.string.message_problem_with_permission, Toast.LENGTH_LONG)
+                        .show()
+                }
             }
             else -> {
-                throw RuntimeException("unhandled request permission result: $requestCode")
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
     }
 
-    private fun requestPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)){
-            val message = R.string.message_rationale_permission_phone_state
-            Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show() //TODO: redesign this toast to Snackbar
-        } else {
-            requestPermissionInMainActivity()
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.action_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivityForResult(intent, REQUEST_SETTINGS)
+                return true
+            }
         }
+        return super.onOptionsItemSelected(item)
     }
 
-    private inline fun requestPermissionInMainActivity(){
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE),
-            MY_PERMISSION_READ_PHONE_STATE)
+    companion object {
+        const val REQUEST_SETTINGS = 100
     }
 
-    private fun checkPermission() = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
 }

@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.telephony.TelephonyManager
 import android.util.Log
+import com.media.dmitry68.callrecorder.preferences.ManagerPref
+import com.media.dmitry68.callrecorder.recorder.Recorder
 import com.media.dmitry68.callrecorder.stateCall.CallStates
 import com.media.dmitry68.callrecorder.stateCall.Caller
 import com.media.dmitry68.callrecorder.stateCall.DirectionCallState
@@ -18,6 +20,8 @@ class CallReceiver : BroadcastReceiver(){
     }
     private val TAG = "LOG_Receiver"
     private val incomingNumber = TelephonyManager.EXTRA_INCOMING_NUMBER
+    lateinit var recorder: Recorder
+    lateinit var managerPref: ManagerPref
 
     override fun onReceive(context: Context, intent: Intent?) {
         Log.d(TAG, "On Receive")
@@ -28,6 +32,8 @@ class CallReceiver : BroadcastReceiver(){
                     number = intent.getStringExtra(incomingNumber)
                     statePhone = telephonyManager.callState
                 }
+                managerPref = ManagerPref(context)
+                recorder = Recorder(managerPref, caller)
                 onCallStateChanged(caller.statePhone)
             }
         }
@@ -53,6 +59,7 @@ class CallReceiver : BroadcastReceiver(){
                                     talkState = TalkStates.STOP
                                     stopTalk = Date()
                                 }
+                                recorder.stopRecord()
                                 Log.d(TAG, "stop incoming call")
                             }
                             DirectionCallState.OUTGOING -> {
@@ -60,6 +67,7 @@ class CallReceiver : BroadcastReceiver(){
                                     talkState = TalkStates.STOP
                                     stopTalk = Date()
                                 }
+                                recorder.stopRecord()
                                 Log.d(TAG, "stop outgoing call")
                             }
                         }
@@ -74,6 +82,7 @@ class CallReceiver : BroadcastReceiver(){
                             talkState = TalkStates.ANSWER
                             startTalk = Date()
                         }
+                        recorder.startRecord()
                         Log.d(TAG, "offhook incoming call ${caller.number}")
                     }
                     CallStates.IDLE -> {
@@ -82,6 +91,7 @@ class CallReceiver : BroadcastReceiver(){
                             talkState = TalkStates.START
                             startTalk = Date()
                         }
+                        recorder.startRecord()
                         Log.d(TAG, "offhook outgoing call ${caller.number}")
                     }
                 }
