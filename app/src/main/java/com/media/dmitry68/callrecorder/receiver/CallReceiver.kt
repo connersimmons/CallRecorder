@@ -24,25 +24,24 @@ class CallReceiver : BroadcastReceiver(){
     lateinit var managerPref: ManagerPref
 
     override fun onReceive(context: Context, intent: Intent?) {
-        Log.d(TAG, "On Receive")
-        if(intent!!.action == IntentActions.PHONE_STAGE_CHANGED && intent.hasExtra(incomingNumber)){
-            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE)
-            if (telephonyManager is TelephonyManager) {
-                with(caller){
-                    number = intent.getStringExtra(incomingNumber)
-                    statePhone = telephonyManager.callState
-                }
-                managerPref = ManagerPref(context)
-                recorder = Recorder(managerPref, caller)
-                onCallStateChanged(caller.statePhone)
+        if (intent!!.action == IntentActions.PHONE_STAGE_CHANGED) {
+            if (intent.hasExtra(incomingNumber)) {
+                caller.number = intent.getStringExtra(incomingNumber)
             }
+            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE)
+            if (telephonyManager is TelephonyManager)
+                caller.statePhone = telephonyManager.callState
+            Log.d(TAG, "On Receive ${caller.number} ${caller.statePhone} $lastState")
+            onCallStateChanged(caller.statePhone, context)
         }
     }
+
+
 
     //INCOMING - IDLE -> RINGING -> OFFHOOK -> IDLE
     //OUTGOING - IDLE -> OFFHOOK -> IDLE
     //MISSING - IDLE -> RINGING -> IDLE
-    private fun onCallStateChanged(statePhone: Int) {
+    private fun onCallStateChanged(statePhone: Int, context: Context) {
         if (lastState == statePhone)
             return //no change
         when(statePhone){
@@ -82,7 +81,7 @@ class CallReceiver : BroadcastReceiver(){
                             talkState = TalkStates.ANSWER
                             startTalk = Date()
                         }
-                        recorder.startRecord()
+                        initRecord(context)
                         Log.d(TAG, "offhook incoming call ${caller.number}")
                     }
                     CallStates.IDLE -> {
@@ -91,7 +90,7 @@ class CallReceiver : BroadcastReceiver(){
                             talkState = TalkStates.START
                             startTalk = Date()
                         }
-                        recorder.startRecord()
+                        initRecord(context)
                         Log.d(TAG, "offhook outgoing call ${caller.number}")
                     }
                 }
@@ -105,6 +104,11 @@ class CallReceiver : BroadcastReceiver(){
             }
         }
         lastState = statePhone
+    }
+
+    private fun initRecord(context: Context){
+        managerPref = ManagerPref(context)
+        recorder = Recorder(managerPref, caller).apply { startRecord() }
     }
 
 }

@@ -35,7 +35,12 @@ class Recorder(
         } else {
             createAudioFile()
             prepareRecorder()
-            recorder!!.start()
+            try {
+                recorder!!.start()
+            } catch (e: Exception){
+                e.printStackTrace()
+                return
+            }
             flagStarted = true
             Log.d(TAG, "Record start")
         }
@@ -54,50 +59,61 @@ class Recorder(
         }
     }
 
-    private fun createAudioFile() {
-        val audioDir = File("$dirPath/$dirName/${caller.formatStartTalk()}")
-        if(!audioDir.exists())
-            audioDir.mkdirs()
+    private fun createAudioFile() : Boolean {
+        try {
+            val audioDir = File("$dirPath/$dirName/${caller.formatStartTalk()}")
+            if (!audioDir.exists())
+                audioDir.mkdirs()
 
-        val flagShowDirection = managerPref.getFlagShowDirectionCall()
-        val flagShowNumber = managerPref.getFlagShowNumber()
-        val fileNameBuilder = StringBuilder()
-        fileNameBuilder.append(managerPref.getFileName())
-        fileNameBuilder.append("_")
-        if(flagShowNumber && caller.number != null){
-            fileNameBuilder.append(caller.number)
+            val flagShowDirection = managerPref.getFlagShowDirectionCall()
+            val flagShowNumber = managerPref.getFlagShowNumber()
+            val fileNameBuilder = StringBuilder()
+            fileNameBuilder.append(managerPref.getFileName())
             fileNameBuilder.append("_")
+            if (flagShowNumber && caller.number != null) {
+                fileNameBuilder.append(caller.number)
+                fileNameBuilder.append("_")
+            }
+            if (flagShowDirection)
+                fileNameBuilder.append(caller.directCallState)
+            val fileName = fileNameBuilder.toString()
+
+            val suffix = ".amr"
+
+            audioFile = File.createTempFile(fileName, suffix, audioDir)
+            return true
+        }catch (e: Exception){
+            Log.d(TAG, "unknown exception on prepare file")
+            return false
         }
-        if(flagShowDirection)
-            fileNameBuilder.append(caller.directCallState)
-        val fileName = fileNameBuilder.toString()
-
-        val suffix = ".amr"
-
-        audioFile = File.createTempFile(fileName, suffix, audioDir)
     }
 
     private fun prepareRecorder(): Boolean {
-        recorder = MediaRecorder()
-        recorder?.apply {
-            setAudioSource(audioSource)
-            setOutputFormat(outputFormat)
-            setAudioEncoder(audioEncoder)
-            setOutputFile(audioFile!!.absolutePath)
-            setOnErrorListener { _, what, _ -> Log.d(TAG, "error while recording: $what")}
-        }
         try {
-            recorder?.prepare()
-        } catch (e: IllegalStateException){
-            Log.d(TAG, "IllegalStateException preparing MediaRecorder: " + e.message)
-            releaseRecorder()
-            return false
-        } catch (e: IOException){
-            Log.d(TAG, "IOException preparing MediaRecorder: " + e.message)
-            releaseRecorder()
+            recorder = MediaRecorder()
+            recorder?.apply {
+                setAudioSource(audioSource)
+                setOutputFormat(outputFormat)
+                setAudioEncoder(audioEncoder)
+                setOutputFile(audioFile!!.absolutePath)
+                setOnErrorListener { _, what, _ -> Log.d(TAG, "error while recording: $what") }
+            }
+            try {
+                recorder?.prepare()
+            } catch (e: IllegalStateException) {
+                Log.d(TAG, "IllegalStateException preparing MediaRecorder: " + e.message)
+                releaseRecorder()
+                return false
+            } catch (e: IOException) {
+                Log.d(TAG, "IOException preparing MediaRecorder: " + e.message)
+                releaseRecorder()
+                return false
+            }
+            return true
+        } catch (e: Exception){
+            Log.d(TAG, "unknown exception on prepare recorder")
             return false
         }
-        return true
     }
 
     private fun releaseRecorder() {

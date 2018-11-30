@@ -7,7 +7,7 @@
     <string name="pref_file_name_default">Record</string>
     <string name="pref_flag_show_direction">Show direction call</string>
     <string name="pref_category_name_file">Name of File</string>
-    <string name="pref_flag_show_number">Show Phone number</string>
+    <string name="pref_flag_show_number">Show phone number</string>
     <string name="settings">Settings</string>
     <string name="message_problem_with_permission">Some permissions is denied</string>
     <string name="message_permission_record_audio">record audio</string>
