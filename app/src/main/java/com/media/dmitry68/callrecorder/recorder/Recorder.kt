@@ -1,5 +1,8 @@
 package com.media.dmitry68.callrecorder.recorder
 
+import android.content.Context
+import android.content.Context.AUDIO_SERVICE
+import android.media.AudioManager
 import android.media.MediaRecorder
 import android.util.Log
 import com.media.dmitry68.callrecorder.preferences.ManagerPref
@@ -10,10 +13,11 @@ import java.lang.Exception
 import java.lang.IllegalStateException
 
 class Recorder(
-    private val managerPref: ManagerPref,
-    private val caller: Caller
+    private val caller: Caller,
+    private val context: Context
 )
 {
+    private val managerPref = ManagerPref(context)
     private val dirName = ConstantsForRecorder.dirName
     private val dirPath = ConstantsForRecorder.dirPath
     private val audioSource = ConstantsForRecorder.audioSource
@@ -92,6 +96,12 @@ class Recorder(
     private fun prepareRecorder(): Boolean {
         try {
             recorder = MediaRecorder()
+            if (audioSource == MediaRecorder.AudioSource.MIC){
+                val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
+                audioManager.mode = AudioManager.MODE_IN_CALL
+                audioManager.isSpeakerphoneOn = true
+                audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0)
+            }
             recorder?.apply {
                 setAudioSource(audioSource)
                 setOutputFormat(outputFormat)

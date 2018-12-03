@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.telephony.TelephonyManager
 import android.util.Log
-import com.media.dmitry68.callrecorder.preferences.ManagerPref
 import com.media.dmitry68.callrecorder.recorder.Recorder
 import com.media.dmitry68.callrecorder.stateCall.CallStates
 import com.media.dmitry68.callrecorder.stateCall.Caller
@@ -21,9 +20,9 @@ class CallReceiver : BroadcastReceiver(){
     private val TAG = "LOG"
     private val incomingNumber = TelephonyManager.EXTRA_INCOMING_NUMBER
     lateinit var recorder: Recorder
-    lateinit var managerPref: ManagerPref
 
     override fun onReceive(context: Context, intent: Intent?) {
+        Log.d(TAG, "On receive")
         if (intent!!.action == IntentActions.PHONE_STAGE_CHANGED) {
             if (intent.hasExtra(incomingNumber)) {
                 caller.number = intent.getStringExtra(incomingNumber)
@@ -106,9 +105,7 @@ class CallReceiver : BroadcastReceiver(){
         lastState = statePhone
     }
 
-    private fun initRecord(context: Context){
-        managerPref = ManagerPref(context)
-        recorder = Recorder(managerPref, caller).apply { startRecord() }
+    private fun initRecord(context: Context) {
+        recorder = Recorder(caller, context).apply { startRecord() }
     }
-
 }
