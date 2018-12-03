@@ -18,7 +18,7 @@ class CallReceiver : BroadcastReceiver(){
         private var lastState: Int = CallStates.IDLE
         private val caller: Caller = Caller()
     }
-    private val TAG = "LOG_Receiver"
+    private val TAG = "LOG"
     private val incomingNumber = TelephonyManager.EXTRA_INCOMING_NUMBER
     lateinit var recorder: Recorder
     lateinit var managerPref: ManagerPref

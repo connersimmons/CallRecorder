@@ -32,9 +32,11 @@ class PermissionManager(private val activity: AppCompatActivity) {
 
     fun requestPermission(){
         if (permissionsNeeded.size > 0){
-            val message = StringBuilder()
-            message.append(activity.getString(com.media.dmitry68.callrecorder.R.string.start_message_permission))
-            message.append(permissionsNeeded[0])
+            val message = StringBuilder().apply {
+                append(activity.getString(com.media.dmitry68.callrecorder.R.string.start_message_permission))
+                append(" ")
+                append(permissionsNeeded[0])
+            }
             for (i in 1 until permissionsNeeded.size) {
                 message.append(", ")
                 message.append(permissionsNeeded[i])

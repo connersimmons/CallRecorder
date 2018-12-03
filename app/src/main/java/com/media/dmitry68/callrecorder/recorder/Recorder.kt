@@ -25,7 +25,7 @@ class Recorder(
         private var flagStarted = false
     }
     private var audioFile: File? = null
-    private val TAG = "LOG_Receiver"
+    private val TAG = "LOG"
 
     fun startRecord(){
         if (flagStarted){
@@ -39,6 +39,7 @@ class Recorder(
                 recorder!!.start()
             } catch (e: Exception){
                 e.printStackTrace()
+                audioFile?.delete()
                 return
             }
             flagStarted = true

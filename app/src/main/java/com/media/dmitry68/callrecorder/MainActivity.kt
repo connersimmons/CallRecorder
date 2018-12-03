@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -14,7 +15,7 @@ import com.media.dmitry68.callrecorder.service.CallService
 
 
 class MainActivity : AppCompatActivity() {
-    private val TAG = "LOG_Receiver"
+    private val TAG = "LOG"
     private val permissionManager = PermissionManager(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startCallService() {
         val intent = Intent().apply { setClass(applicationContext, CallService::class.java) }
-        startService(intent)
+        ContextCompat.startForegroundService(applicationContext, intent)
     }
 
     //TODO: move requestpermission result to permissionManager
