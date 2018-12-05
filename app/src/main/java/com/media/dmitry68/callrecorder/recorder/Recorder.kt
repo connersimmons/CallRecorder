@@ -20,7 +20,6 @@ class Recorder(
     private val managerPref = ManagerPref(context)
     private val dirName = ConstantsForRecorder.dirName
     private val dirPath = ConstantsForRecorder.dirPath
-    private val audioSource = ConstantsForRecorder.audioSource
     private val audioEncoder = ConstantsForRecorder.audioEncoder
     private val outputFormat = ConstantsForRecorder.outputFormat
 
@@ -30,6 +29,7 @@ class Recorder(
     }
     private var audioFile: File? = null
     private val TAG = "LOG"
+    private var flagVoiceCall = false
 
     fun startRecord(){
         if (flagStarted){
@@ -39,6 +39,7 @@ class Recorder(
         } else {
             createAudioFile()
             prepareRecorder()
+            Thread.sleep(2000)
             try {
                 recorder!!.start()
             } catch (e: Exception){
@@ -66,29 +67,32 @@ class Recorder(
 
     private fun createAudioFile() : Boolean {
         try {
-            val audioDir = File("$dirPath/$dirName/${caller.formatStartTalk()}")
+            val audioDir = File("$dirPath/$dirName/${caller.formatStartTalkForDir()}")
             if (!audioDir.exists())
                 audioDir.mkdirs()
 
             val flagShowDirection = managerPref.getFlagShowDirectionCall()
             val flagShowNumber = managerPref.getFlagShowNumber()
-            val fileNameBuilder = StringBuilder()
-            fileNameBuilder.append(managerPref.getFileName())
-            fileNameBuilder.append("_")
-            if (flagShowNumber && caller.number != null) {
-                fileNameBuilder.append(caller.number)
-                fileNameBuilder.append("_")
-            }
-            if (flagShowDirection)
-                fileNameBuilder.append(caller.directCallState)
-            val fileName = fileNameBuilder.toString()
-
+            val fileNameBuilder = StringBuilder().apply {
+                append(managerPref.getFileName())
+                append("_")
+                if (flagShowNumber && caller.number != null) {
+                    append(caller.number)
+                    append("_")
+                }
+                if (flagShowDirection) {
+                    append(caller.directCallState)
+                    append("_")
+                }
+                append(caller.formatStartTalkForFile())
+            }.toString()
             val suffix = ".amr"
+            audioFile = File.createTempFile(fileNameBuilder, suffix, audioDir)
 
-            audioFile = File.createTempFile(fileName, suffix, audioDir)
             return true
         }catch (e: Exception){
             Log.d(TAG, "unknown exception on prepare file")
+
             return false
         }
     }
@@ -96,6 +100,8 @@ class Recorder(
     private fun prepareRecorder(): Boolean {
         try {
             recorder = MediaRecorder()
+            val stringAudioSource = managerPref.getAudioSource()
+            val audioSource = resolveAudioSource(stringAudioSource)
             if (audioSource == MediaRecorder.AudioSource.MIC){
                 val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
                 audioManager.mode = AudioManager.MODE_IN_CALL
@@ -124,6 +130,31 @@ class Recorder(
         } catch (e: Exception){
             Log.d(TAG, "unknown exception on prepare recorder")
             return false
+        }
+    }
+
+    private fun resolveAudioSource(stringAudioSource: String): Int {
+        when (stringAudioSource) {
+            context.getString(com.media.dmitry68.callrecorder.R.string.pref_audio_source_voice_communication) -> {
+                flagVoiceCall = false
+                return MediaRecorder.AudioSource.VOICE_COMMUNICATION
+            }
+            context.getString(com.media.dmitry68.callrecorder.R.string.pref_audio_source_mic) -> {
+                flagVoiceCall = false
+                return MediaRecorder.AudioSource.MIC
+            }
+            context.getString(com.media.dmitry68.callrecorder.R.string.pref_audio_source_voice_call) -> {
+                flagVoiceCall = true
+                return MediaRecorder.AudioSource.VOICE_CALL
+            }
+            context.getString(com.media.dmitry68.callrecorder.R.string.pref_audio_source_default) -> {
+                flagVoiceCall = true
+                return MediaRecorder.AudioSource.DEFAULT
+            }
+            else -> {
+                Log.d(TAG, "unresolved audioSource: $stringAudioSource")
+                return MediaRecorder.AudioSource.VOICE_COMMUNICATION
+            }
         }
     }
 

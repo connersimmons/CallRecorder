@@ -11,9 +11,10 @@ data class Caller(
     var startTalk: Date = Date(),
     var stopTalk: Date = Date()
 ) {
-    private val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    private val sdfForDir = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    private val sdfForFile = SimpleDateFormat("hh-mm-ss", Locale.getDefault())
 
-    fun formatStartTalk() = sdf.format(startTalk)
+    fun formatStartTalkForDir() = sdfForDir.format(startTalk)
 
-    fun formatStopTalk() = sdf.format(stopTalk)
+    fun formatStartTalkForFile() = sdfForFile.format(startTalk)
 }

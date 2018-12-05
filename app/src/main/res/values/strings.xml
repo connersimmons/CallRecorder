@@ -11,4 +11,19 @@
     <string name="settings">Settings</string>
     <string name="message_problem_with_permission">Some permissions is denied</string>
     <string name="message_permission_record_audio">to record audio</string>
+    <string name="pref_category_recorder">Recorder</string>
+    <string name="pref_audio_source">Audio source</string>
+    <string name="pref_audio_source_voice_communication">VOICE_COMMUNICATION</string>
+    <string name="pref_audio_source_mic">MIC</string>
+    <string name="pref_audio_source_voice_call">VOICE_CALL</string>
+    <string name="pref_audio_source_default">DEFAULT</string>
+    <string name="channel_id">channel_id</string>
+    <string name="notification_title">Call Recording</string>
+    <string name="notification_text">Recorder On</string>
+    <string-array name="entries_of_audio_source">
+        <item>VOICE_COMMUNICATION</item>
+        <item>MIC</item>
+        <item>VOICE_CALL</item>
+        <item>DEFAULT</item>
+    </string-array>
 </resources>

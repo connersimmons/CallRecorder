@@ -17,5 +17,13 @@
                 android:title="@string/pref_flag_show_number"
                 android:key="pref_flag_show_number"/>
     </PreferenceCategory>
-
+    <PreferenceCategory
+            android:title="@string/pref_category_recorder">
+        <ListPreference
+                android:defaultValue="@string/pref_audio_source_default"
+                android:title="@string/pref_audio_source"
+                android:entries="@array/entries_of_audio_source"
+                android:entryValues="@array/entries_of_audio_source"
+                android:key="pref_audio_source"/>
+    </PreferenceCategory>
 </PreferenceScreen>

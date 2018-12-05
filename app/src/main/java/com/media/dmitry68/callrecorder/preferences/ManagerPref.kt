@@ -20,9 +20,15 @@ class ManagerPref(private val context : Context){
         return sharedPref.getBoolean(KEY_PREF_FLAG_SHOW_NUMBER, true)
     }
 
+    fun getAudioSource() : String{
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+        return sharedPref.getString(KEY_PREF_AUDIO_SOURCE, context.getString(R.string.pref_audio_source_voice_communication))!!
+    }
+
     companion object {
         const val KEY_PREF_FILE_NAME = "pref_file_name"
         const val KEY_PREF_FLAG_SHOW_DIRECTION_CALL = "pref_flag_show_direction_call"
         const val KEY_PREF_FLAG_SHOW_NUMBER = "pref_flag_show_number"
+        const val KEY_PREF_AUDIO_SOURCE = "pref_audio_source"
     }
 }

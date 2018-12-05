@@ -1,4 +1,4 @@
-package com.media.dmitry68.callrecorder
+package com.media.dmitry68.callrecorder.preferences
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity

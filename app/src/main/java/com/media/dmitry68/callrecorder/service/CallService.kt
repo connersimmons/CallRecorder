@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
 import android.util.Log
+import com.media.dmitry68.callrecorder.notification.NotificationManager
 import com.media.dmitry68.callrecorder.receiver.CallReceiver
 import com.media.dmitry68.callrecorder.receiver.IntentActions
 
@@ -16,14 +17,14 @@ class CallService : Service(){
         return null
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        return Service.START_REDELIVER_INTENT
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         stopCallReceiver()
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        Log.d(TAG, "Service on Task removed")
     }
 
     private fun stopCallReceiver() {
@@ -35,6 +36,8 @@ class CallService : Service(){
     override fun onCreate() {
         super.onCreate()
         startCallReceiver()
+        val notification = NotificationManager(this).Builder().build()
+        startForeground(NotificationManager.NOTIFICATION_ID, notification)
         Log.d(TAG, "Service create")
     }
 
