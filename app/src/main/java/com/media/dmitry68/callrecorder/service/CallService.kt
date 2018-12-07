@@ -35,10 +35,20 @@ class CallService : Service(){
 
     override fun onCreate() {
         super.onCreate()
-        startCallReceiver()
-        val notification = NotificationManager(this).Builder().build()
-        startForeground(NotificationManager.NOTIFICATION_ID, notification)
         Log.d(TAG, "Service create")
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+        if (intent?.action.equals(START_FOREGROUND_ACTION)) {
+            startCallReceiver()
+            val notification = NotificationManager(this).Builder().build()
+            startForeground(NotificationManager.NOTIFICATION_ID, notification)
+        } else if (intent?.action.equals(STOP_FOREGROUND_ACTION)){
+            stopForeground(true)
+            stopSelf()
+        }
+        return START_REDELIVER_INTENT
     }
 
     private fun startCallReceiver() {
@@ -47,5 +57,10 @@ class CallService : Service(){
         val intentFilterPhoneStateChange = IntentFilter(IntentActions.PHONE_STAGE_CHANGED)
         registerReceiver(callReceiver, intentFilterPhoneStateChange)
         Log.d(TAG, "Service register receiver")
+    }
+
+    companion object {
+        const val START_FOREGROUND_ACTION = "com.media.dmitry68.callrecorder.service.STARTFOREGROUND"
+        const val STOP_FOREGROUND_ACTION = "com.media.dmitry68.callrecorder.service.STOPFOREGROUND"
     }
 }

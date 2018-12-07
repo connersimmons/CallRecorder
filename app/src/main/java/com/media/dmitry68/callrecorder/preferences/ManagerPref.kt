@@ -5,24 +5,22 @@ import android.support.v7.preference.PreferenceManager
 import com.media.dmitry68.callrecorder.R
 
 class ManagerPref(private val context : Context){
-    fun getFileName() : String{
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-        return sharedPref.getString(KEY_PREF_FILE_NAME, context.getString(R.string.pref_file_name))!!
-    }
+    val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
 
-    fun getFlagShowDirectionCall() : Boolean{
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-        return sharedPref.getBoolean(KEY_PREF_FLAG_SHOW_DIRECTION_CALL, true)
-    }
+    fun getFileName() = sharedPref.getString(KEY_PREF_FILE_NAME, context.getString(R.string.pref_file_name))!!
 
-    fun getFlagShowNumber() : Boolean{
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-        return sharedPref.getBoolean(KEY_PREF_FLAG_SHOW_NUMBER, true)
-    }
+    fun getFlagShowDirectionCall() = sharedPref.getBoolean(KEY_PREF_FLAG_SHOW_DIRECTION_CALL, true)
 
-    fun getAudioSource() : String{
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-        return sharedPref.getString(KEY_PREF_AUDIO_SOURCE, context.getString(R.string.pref_audio_source_voice_communication))!!
+    fun getFlagShowNumber() = sharedPref.getBoolean(KEY_PREF_FLAG_SHOW_NUMBER, true)
+
+    fun getAudioSource() = sharedPref.getString(KEY_PREF_AUDIO_SOURCE, context.getString(R.string.pref_audio_source_voice_communication))!!
+
+    fun getStateService() = sharedPref.getBoolean(KEY_PREF_SERVICE_STATUS, false)
+
+    fun setStateService(state: Boolean){
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context).edit()
+        sharedPref.putBoolean(KEY_PREF_SERVICE_STATUS, state)
+        sharedPref.apply()
     }
 
     companion object {
@@ -30,5 +28,6 @@ class ManagerPref(private val context : Context){
         const val KEY_PREF_FLAG_SHOW_DIRECTION_CALL = "pref_flag_show_direction_call"
         const val KEY_PREF_FLAG_SHOW_NUMBER = "pref_flag_show_number"
         const val KEY_PREF_AUDIO_SOURCE = "pref_audio_source"
+        const val KEY_PREF_SERVICE_STATUS = "pref_service_status"
     }
 }

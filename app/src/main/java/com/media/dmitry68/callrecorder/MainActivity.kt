@@ -5,32 +5,40 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.CompoundButton
 import android.widget.Toast
 import com.media.dmitry68.callrecorder.permissions.PermissionManager
+import com.media.dmitry68.callrecorder.preferences.ManagerPref
 import com.media.dmitry68.callrecorder.preferences.SettingsActivity
-import com.media.dmitry68.callrecorder.service.CallService
+import com.media.dmitry68.callrecorder.service.ServiceManager
+import kotlinx.android.synthetic.main.activity_main.*
 
+class MainActivity : AppCompatActivity(), MVPView{
 
-class MainActivity : AppCompatActivity() {
     private val TAG = "LOG"
     private val permissionManager = PermissionManager(this)
+    lateinit var serviceManager: ServiceManager
+    lateinit var presenter: MainPresenter
+    lateinit var managerPref: ManagerPref
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.d(TAG, "Create MainActivity")
-        if (!permissionManager.checkPermission())
-            permissionManager.requestPermission()
-        else
-            startCallService()
+        serviceManager = ServiceManager(applicationContext)
+        managerPref = ManagerPref(this)
+        presenter = MainPresenter(this, serviceManager, permissionManager, managerPref)
+        switchService.setOnCheckedChangeListener(SwitchModeListener())
+
+        presenter.setUp()
     }
 
     override fun onResume() {
-        super.onResume() //TODO: requestPermission on preference change
+        super.onResume()
         Log.d(TAG, "Resume MainActivity")
     }
 
@@ -44,17 +52,7 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "Destroy MainActivity")
     }
 
-    private fun startCallService() {
-        val intent = Intent().apply { setClass(applicationContext, CallService::class.java) }
-        ContextCompat.startForegroundService(applicationContext, intent)
-    }
-
-    private fun stopCallService() {
-        val intent = Intent().apply { setClass(applicationContext, CallService::class.java) }
-        stopService(intent)
-    }
-
-    //TODO: move requestpermission result to permissionManager
+    //TODO: think about move this fun to PermissionManager
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when(requestCode){
             PermissionManager.REQUEST_CODE_ASK_PERMISSIONS -> {
@@ -69,11 +67,13 @@ class MainActivity : AppCompatActivity() {
                 if (perms[Manifest.permission.READ_PHONE_STATE] == PackageManager.PERMISSION_GRANTED
                     && perms[Manifest.permission.WRITE_EXTERNAL_STORAGE] == PackageManager.PERMISSION_GRANTED
                     && perms[Manifest.permission.RECORD_AUDIO] == PackageManager.PERMISSION_GRANTED) {
-                        startCallService()
+                    presenter.onCheckPermission(true)
+                    presenter.switchCompatChange(true)
                 } else {
                     Toast.makeText(this, R.string.message_problem_with_permission, Toast.LENGTH_LONG)
                         .show()
-                    stopCallService()
+                    presenter.onCheckPermission(false)
+                    presenter.switchCompatChange(false)
                 }
             }
             else -> {
@@ -98,8 +98,24 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun showSwitchMode(b: Boolean) {
+        switchService.visibility = if (b) View.VISIBLE else View.GONE
+    }
+
+    override fun setSwitchMode(b: Boolean){
+        switchService.isChecked = b
+        Log.d(TAG, "switch to $b")
+    }
+
     companion object {
         const val REQUEST_SETTINGS = 100
     }
+
+    inner class SwitchModeListener: CompoundButton.OnCheckedChangeListener{
+        override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+            presenter.switchCompatChange(isChecked)
+        }
+    }
+
 
 }

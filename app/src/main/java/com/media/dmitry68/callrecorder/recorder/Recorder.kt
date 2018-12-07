@@ -73,6 +73,8 @@ class Recorder(
 
             val flagShowDirection = managerPref.getFlagShowDirectionCall()
             val flagShowNumber = managerPref.getFlagShowNumber()
+            val suffix = ".amr"
+
             val fileNameBuilder = StringBuilder().apply {
                 append(managerPref.getFileName())
                 append("_")
@@ -85,9 +87,10 @@ class Recorder(
                     append("_")
                 }
                 append(caller.formatStartTalkForFile())
+                append(suffix)
             }.toString()
-            val suffix = ".amr"
-            audioFile = File.createTempFile(fileNameBuilder, suffix, audioDir)
+            audioFile = File(audioDir, fileNameBuilder)
+            audioFile!!.createNewFile()
 
             return true
         }catch (e: Exception){

@@ -20,6 +20,7 @@
     <string name="channel_id">channel_id</string>
     <string name="notification_title">Call Recording</string>
     <string name="notification_text">Recorder On</string>
+    <string name="state_service">Recorder</string>
     <string-array name="entries_of_audio_source">
         <item>VOICE_COMMUNICATION</item>
         <item>MIC</item>
