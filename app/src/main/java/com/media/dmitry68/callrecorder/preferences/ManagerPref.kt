@@ -23,11 +23,14 @@ class ManagerPref(private val context : Context){
         sharedPref.apply()
     }
 
+    fun getModeOfWork() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, context.getString(R.string.pref_mode_of_work_default))
+
     companion object {
         const val KEY_PREF_FILE_NAME = "pref_file_name"
         const val KEY_PREF_FLAG_SHOW_DIRECTION_CALL = "pref_flag_show_direction_call"
         const val KEY_PREF_FLAG_SHOW_NUMBER = "pref_flag_show_number"
         const val KEY_PREF_AUDIO_SOURCE = "pref_audio_source"
         const val KEY_PREF_SERVICE_STATUS = "pref_service_status"
+        const val KEY_PREF_MODE_OF_WORK = "pref_mode_of_work"
     }
 }
