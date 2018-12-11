@@ -7,9 +7,9 @@ import android.support.v4.content.ContextCompat
 class ServiceManager(val context: Context){
 
     fun startCallService() {
-        val intent = Intent().apply {
+        val intent = Intent().apply {//TODO: start service on boot device
             setClass(context, CallService::class.java)
-            setAction(CallService.START_FOREGROUND_ACTION)
+            action = CallService.START_FOREGROUND_ACTION
         }
         ContextCompat.startForegroundService(context, intent)
     }
@@ -17,7 +17,7 @@ class ServiceManager(val context: Context){
     fun stopCallService() {
         val intent = Intent().apply {
             setClass(context, CallService::class.java)
-            setAction(CallService.STOP_FOREGROUND_ACTION)
+            action = CallService.STOP_FOREGROUND_ACTION
         }
         ContextCompat.startForegroundService(context, intent)
     }

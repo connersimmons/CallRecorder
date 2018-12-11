@@ -21,9 +21,9 @@ class MainActivity : AppCompatActivity(), MVPView{
 
     private val TAG = "LOG"
     private val permissionManager = PermissionManager(this)
-    lateinit var serviceManager: ServiceManager
+    private lateinit var serviceManager: ServiceManager
     lateinit var presenter: MainPresenter
-    lateinit var managerPref: ManagerPref
+    private lateinit var managerPref: ManagerPref
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,12 +68,12 @@ class MainActivity : AppCompatActivity(), MVPView{
                     && perms[Manifest.permission.WRITE_EXTERNAL_STORAGE] == PackageManager.PERMISSION_GRANTED
                     && perms[Manifest.permission.RECORD_AUDIO] == PackageManager.PERMISSION_GRANTED) {
                     presenter.onCheckPermission(true)
-                    presenter.switchCompatChange(true)
+                    presenter.setSwitchCompatState(true)
                 } else {
                     Toast.makeText(this, R.string.message_problem_with_permission, Toast.LENGTH_LONG)
                         .show()
                     presenter.onCheckPermission(false)
-                    presenter.switchCompatChange(false)
+                    presenter.setSwitchCompatState(false)
                 }
             }
             else -> {

@@ -20,7 +20,7 @@ class MainPresenter(
             permissionManager.requestPermission()
         else {
             onCheckPermission(true)
-            switchCompatChange(initialState)
+            setSwitchCompatState(initialState)
         }
     }
 
@@ -28,16 +28,17 @@ class MainPresenter(
         Log.d(TAG, "presenter: switchChange to $modeService")
         if (modeService) {
             serviceManager.startCallService()
-            mvpView.setSwitchMode(true)
             managerPref.setStateService(true)
         } else {
             serviceManager.stopCallService()
-            mvpView.setSwitchMode(false)
             managerPref.setStateService(false)
         }
     }
 
-    override fun onCheckPermission(checkPermssion: Boolean) {
-       mvpView.showSwitchMode(checkPermssion)
+    override fun onCheckPermission(checkPermission: Boolean) {
+       mvpView.showSwitchMode(checkPermission)
+    }
+    override fun setSwitchCompatState(state: Boolean){
+        mvpView.setSwitchMode(state)
     }
 }

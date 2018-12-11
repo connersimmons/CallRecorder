@@ -42,7 +42,7 @@ class CallService : Service(){
         super.onStartCommand(intent, flags, startId)
         if (intent?.action.equals(START_FOREGROUND_ACTION)) {
             startCallReceiver()
-            val notification = NotificationManager(this).Builder().build()
+            val notification = NotificationManager(this).builder().build()
             startForeground(NotificationManager.NOTIFICATION_ID, notification)
         } else if (intent?.action.equals(STOP_FOREGROUND_ACTION)){
             stopForeground(true)
