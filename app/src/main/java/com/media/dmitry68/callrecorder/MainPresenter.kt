@@ -3,6 +3,7 @@ package com.media.dmitry68.callrecorder
 import android.util.Log
 import com.media.dmitry68.callrecorder.permissions.PermissionManager
 import com.media.dmitry68.callrecorder.preferences.ManagerPref
+import com.media.dmitry68.callrecorder.service.ModeOfWork
 import com.media.dmitry68.callrecorder.service.ServiceManager
 
 class MainPresenter(
@@ -15,7 +16,8 @@ class MainPresenter(
 
     override fun setUp() {
         val initialState = managerPref.getStateService()
-        Log.d(TAG, "presenter: Setup in initialState: $initialState")
+        serviceManager.setModeOfWork(managerPref.getModeOfWork())
+        Log.d(TAG, "presenter: Setup in initialState: $initialState in mode of work: ${managerPref.getModeOfWork()}")
         if (!permissionManager.checkPermission())
             permissionManager.requestPermission()
         else {

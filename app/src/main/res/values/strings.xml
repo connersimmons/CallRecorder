@@ -21,10 +21,18 @@
     <string name="notification_title">Call Recording</string>
     <string name="notification_text">Recorder On</string>
     <string name="state_service">Recorder</string>
+    <string name="pref_category_general">General</string>
+    <string name="pref_mode_of_work_default">Background</string>
+    <string name="pref_mode_of_work_on_demand">On demand</string>
+    <string name="pref_mode_of_work">Mode of work</string>
     <string-array name="entries_of_audio_source">
         <item>VOICE_COMMUNICATION</item>
         <item>MIC</item>
         <item>VOICE_CALL</item>
         <item>DEFAULT</item>
+    </string-array>
+    <string-array name="modes_of_work">
+        <item>Background</item>
+        <item>On demand</item>
     </string-array>
 </resources>

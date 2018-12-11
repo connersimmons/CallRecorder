@@ -29,8 +29,8 @@ class MainActivity : AppCompatActivity(), MVPView{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.d(TAG, "Create MainActivity")
-        serviceManager = ServiceManager(applicationContext)
         managerPref = ManagerPref(this)
+        serviceManager = ServiceManager(applicationContext)
         presenter = MainPresenter(this, serviceManager, permissionManager, managerPref)
         switchService.setOnCheckedChangeListener(SwitchModeListener())
 
