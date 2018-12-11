@@ -9,7 +9,7 @@ import com.media.dmitry68.callrecorder.notification.NotificationManager
 import com.media.dmitry68.callrecorder.receiver.CallReceiver
 import com.media.dmitry68.callrecorder.receiver.IntentActions
 
-class CallService : Service(){
+class CallForegroundService : Service(){
     private var callReceiver: CallReceiver? = null
     private val TAG = "LOG"
 
