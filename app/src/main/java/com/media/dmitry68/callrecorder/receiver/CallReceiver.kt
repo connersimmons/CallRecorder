@@ -35,8 +35,6 @@ class CallReceiver : BroadcastReceiver(){
         }
     }
 
-
-
     //INCOMING - IDLE -> RINGING -> OFFHOOK -> IDLE
     //OUTGOING - IDLE -> OFFHOOK -> IDLE
     //MISSING - IDLE -> RINGING -> IDLE

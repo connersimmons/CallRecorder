@@ -68,12 +68,10 @@ class MainActivity : AppCompatActivity(), MVPView{
                     && perms[Manifest.permission.WRITE_EXTERNAL_STORAGE] == PackageManager.PERMISSION_GRANTED
                     && perms[Manifest.permission.RECORD_AUDIO] == PackageManager.PERMISSION_GRANTED) {
                     presenter.onCheckPermission(true)
-                    presenter.setSwitchCompatState(true)
                 } else {
                     Toast.makeText(this, R.string.message_problem_with_permission, Toast.LENGTH_LONG)
                         .show()
                     presenter.onCheckPermission(false)
-                    presenter.setSwitchCompatState(false)
                 }
             }
             else -> {
@@ -98,13 +96,14 @@ class MainActivity : AppCompatActivity(), MVPView{
         return super.onOptionsItemSelected(item)
     }
 
-    override fun showSwitchMode(b: Boolean) {
+    override fun showSwitchVisibility(b: Boolean) {
         switchService.visibility = if (b) View.VISIBLE else View.GONE
+        Log.d(TAG, "View: switch Visibility to $b")
     }
 
     override fun setSwitchMode(b: Boolean){
         switchService.isChecked = b
-        Log.d(TAG, "switch to $b")
+        Log.d(TAG, "View: switch to $b")
     }
 
     companion object {

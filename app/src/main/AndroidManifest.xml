@@ -27,7 +27,8 @@
         <service android:name=".service.CallForegroundService"/>
         <service
                 android:name=".service.CallJobService"
-                android:permission="android.permission.BIND_JOB_SERVICE"/>
+                android:permission="android.permission.BIND_JOB_SERVICE"
+                android:exported="true"/>
         <service android:name=".service.SensorIntentService"/>
     </application>
 

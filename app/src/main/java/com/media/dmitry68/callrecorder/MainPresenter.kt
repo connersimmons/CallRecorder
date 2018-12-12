@@ -3,8 +3,8 @@ package com.media.dmitry68.callrecorder
 import android.util.Log
 import com.media.dmitry68.callrecorder.permissions.PermissionManager
 import com.media.dmitry68.callrecorder.preferences.ManagerPref
-import com.media.dmitry68.callrecorder.service.ModeOfWork
 import com.media.dmitry68.callrecorder.service.ServiceManager
+import java.beans.PropertyChangeListener
 
 class MainPresenter(
     private val mvpView: MVPView,
@@ -13,16 +13,15 @@ class MainPresenter(
     private val managerPref: ManagerPref
 ): MVPPresenter {
     private val TAG = "LOG"
+    private val model = MVPModel()
 
     override fun setUp() {
         val initialState = managerPref.getStateService()
-        serviceManager.setModeOfWork(managerPref.getModeOfWork())
-        Log.d(TAG, "presenter: Setup in initialState: $initialState in mode of work: ${managerPref.getModeOfWork()}")
+        model.stateOfService = initialState
         if (!permissionManager.checkPermission())
             permissionManager.requestPermission()
         else {
             onCheckPermission(true)
-            setSwitchCompatState(initialState)
         }
     }
 
@@ -30,17 +29,41 @@ class MainPresenter(
         Log.d(TAG, "presenter: switchChange to $modeService")
         if (modeService) {
             serviceManager.startCallService()
-            managerPref.setStateService(true)
         } else {
             serviceManager.stopCallService()
-            managerPref.setStateService(false)
         }
+        managerPref.setStateService(modeService)
+        model.stateOfService = modeService
     }
 
     override fun onCheckPermission(checkPermission: Boolean) {
-       mvpView.showSwitchMode(checkPermission)
+       mvpView.showSwitchVisibility(checkPermission)
+        if (checkPermission){
+            initialSetModeOfWork()
+            setSwitchCompatState(model.stateOfService)
+        } else {
+            setSwitchCompatState(false)
+        }
     }
     override fun setSwitchCompatState(state: Boolean){
         mvpView.setSwitchMode(state)
     }
+
+    override fun onChangeModeOfWork(newModeOfWork: String) {
+        val oldState = model.stateOfService
+        if (oldState)
+            setSwitchCompatState(false)
+        serviceManager.setModeOfWork(newModeOfWork)
+        setSwitchCompatState(oldState)
+    }
+
+    private fun initialSetModeOfWork(){
+        serviceManager.setModeOfWork(managerPref.propertyModeOfWork)
+        Log.d(TAG, "presenter: Setup in initialState: ${model.stateOfService} in mode of work: ${managerPref.propertyModeOfWork}")
+        managerPref.addPropertyChangeListener(PropertyChangeListener { event ->
+            Log.d(TAG, "${event.propertyName} changed from ${event.oldValue} to ${event.newValue}")
+            onChangeModeOfWork(event.newValue.toString())
+        })
+    }
+
 }

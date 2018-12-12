@@ -5,7 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
 import android.util.Log
-import com.media.dmitry68.callrecorder.notification.NotificationManager
+import com.media.dmitry68.callrecorder.notification.NotifyManager
 import com.media.dmitry68.callrecorder.receiver.CallReceiver
 import com.media.dmitry68.callrecorder.receiver.IntentActions
 
@@ -42,8 +42,8 @@ class CallForegroundService : Service(){
         super.onStartCommand(intent, flags, startId)
         if (intent?.action.equals(START_FOREGROUND_ACTION)) {
             startCallReceiver()
-            val notification = NotificationManager(this).builder().build()
-            startForeground(NotificationManager.NOTIFICATION_ID, notification)
+            val notification = NotifyManager(this).builder().build()
+            startForeground(NotifyManager.NOTIFICATION_ID, notification)
         } else if (intent?.action.equals(STOP_FOREGROUND_ACTION)){
             stopForeground(true)
             stopSelf()

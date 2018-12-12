@@ -1,11 +1,14 @@
 package com.media.dmitry68.callrecorder.service
 
 import android.app.IntentService
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
+import com.media.dmitry68.callrecorder.notification.NotifyManager
 import com.media.dmitry68.callrecorder.shaker.ShakeDetector
 import com.media.dmitry68.callrecorder.shaker.ShakeListener
 
@@ -27,10 +30,22 @@ class SensorIntentService: IntentService("SensorIntentService"){
             shakeDetector.shakeListener = object : ShakeListener {
                 override fun onShake(count: Int) {
                     Log.d(TAG, "Detect $count shake")
+                    if (count == 3) {//TODO:make count preference
+                        Log.d(TAG, "Start push notification")
+                        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE)
+                        val notification = NotifyManager(applicationContext).builder()
+                        if (notificationManager is NotificationManager)
+                            notificationManager.notify(NotifyManager.NOTIFICATION_ID, notification.build())
+                        sendIntentOnFinishJob()
+                    }
                 }
             }
             sensorManager.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
         }
+    }
+
+    private fun sendIntentOnFinishJob() {
+        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(CallJobService.JOB_FINISH))
     }
 
     companion object {

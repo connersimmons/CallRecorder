@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit
 
 class ServiceManager(val context: Context){
     private lateinit var modeOfWork: ModeOfWork
-    private val JOB_ID = 1
+    private var JOB_ID = 1
     private val TAG = "LOG"
     private val callJobServiceComponentName = ComponentName(context, CallJobService::class.java.name)
-
+    private val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE)
     fun startCallService() {
         when(modeOfWork) {
             is ModeOfWork.Background -> {
@@ -34,7 +34,7 @@ class ServiceManager(val context: Context){
                 manageForegroundCallService(CallForegroundService.STOP_FOREGROUND_ACTION)
             }
             is ModeOfWork.OnDemand -> {
-
+                unScheduleCallJobService()
             }
         }
     }
@@ -62,7 +62,6 @@ class ServiceManager(val context: Context){
     }
 
     private fun scheduleJobCallService(){
-        val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE)
         if (jobScheduler is JobScheduler) {
             Log.d(TAG, "Schedule Job")
             val callJobBuilder = JobInfo.Builder(JOB_ID, callJobServiceComponentName)
@@ -70,6 +69,13 @@ class ServiceManager(val context: Context){
                 .setOverrideDeadline(TimeUnit.SECONDS.toMillis(5))//TODO: add setPersisted
                 .setBackoffCriteria(TimeUnit.SECONDS.toMillis(10), JobInfo.BACKOFF_POLICY_LINEAR)
             jobScheduler.schedule(callJobBuilder.build())
+        }
+    }
+
+    private fun unScheduleCallJobService(){
+        if (jobScheduler is JobScheduler){
+            Log.d(TAG, "unschedule job")
+            jobScheduler.cancel(JOB_ID)
         }
     }
 }

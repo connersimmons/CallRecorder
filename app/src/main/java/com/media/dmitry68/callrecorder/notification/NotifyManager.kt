@@ -9,7 +9,7 @@ import android.support.v4.app.TaskStackBuilder
 import com.media.dmitry68.callrecorder.MainActivity
 import com.media.dmitry68.callrecorder.R
 
-class NotificationManager(private val context: Context) {
+class NotifyManager(private val context: Context) {
 
     fun builder() : NotificationCompat.Builder {
         val builder =

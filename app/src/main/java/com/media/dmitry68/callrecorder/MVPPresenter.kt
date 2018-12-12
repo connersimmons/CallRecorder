@@ -9,4 +9,6 @@ interface MVPPresenter {
     fun switchCompatChange(modeService: Boolean)
 
     fun onCheckPermission(checkPermission: Boolean)
+
+    fun onChangeModeOfWork(newModeOfWork: String)
 }

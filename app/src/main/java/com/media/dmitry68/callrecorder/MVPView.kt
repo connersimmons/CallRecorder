@@ -2,7 +2,7 @@ package com.media.dmitry68.callrecorder
 
 interface MVPView {
 
-    fun showSwitchMode(b: Boolean)
+    fun showSwitchVisibility(b: Boolean)
 
     fun setSwitchMode(b: Boolean)
 }
