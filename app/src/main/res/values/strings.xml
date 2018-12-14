@@ -25,6 +25,7 @@
     <string name="pref_mode_of_work_default">Background</string>
     <string name="pref_mode_of_work_on_demand">On demand</string>
     <string name="pref_mode_of_work">Mode of work</string>
+    <string name="notification_action_stop_recorder">Stop</string>
     <string-array name="entries_of_audio_source">
         <item>VOICE_COMMUNICATION</item>
         <item>MIC</item>

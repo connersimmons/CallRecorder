@@ -78,7 +78,7 @@ class Recorder(
             val fileNameBuilder = StringBuilder().apply {
                 append(managerPref.getFileName())
                 append("_")
-                if (flagShowNumber && caller.number != null) {
+                if (flagShowNumber) {
                     append(caller.number)
                     append("_")
                 }
@@ -91,7 +91,6 @@ class Recorder(
             }.toString()
             audioFile = File(audioDir, fileNameBuilder)
             audioFile!!.createNewFile()
-
             return true
         }catch (e: Exception){
             Log.d(TAG, "unknown exception on prepare file")
