@@ -9,7 +9,6 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.app.TaskStackBuilder
 import com.media.dmitry68.callrecorder.MainActivity
 import com.media.dmitry68.callrecorder.R
-import com.media.dmitry68.callrecorder.shaker.ShakeDetector
 
 class NotifyManager(private val context: Context) {
     private lateinit var notificationBuilder: NotificationCompat.Builder
@@ -34,10 +33,7 @@ class NotifyManager(private val context: Context) {
     }
 
     fun addAction(actionIntent: String){
-        val intentForBroadcast = Intent().apply {
-            setClass(context, ShakeDetector.ReceiverOfStopReorder::class.java)
-            action = actionIntent
-        }
+        val intentForBroadcast = Intent(actionIntent)
         val pendingIntent = PendingIntent.getBroadcast(context, 0, intentForBroadcast, PendingIntent.FLAG_UPDATE_CURRENT)
         notificationBuilder.addAction(NotificationCompat.Action(android.R.drawable.ic_notification_overlay,
             context.getString(com.media.dmitry68.callrecorder.R.string.notification_action_stop_recorder),

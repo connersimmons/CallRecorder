@@ -14,10 +14,10 @@ import java.lang.IllegalStateException
 
 class Recorder(
     private val caller: Caller,
-    private val context: Context
+    private val context: Context,
+    private val managerPref: ManagerPref
 )
 {
-    private val managerPref = ManagerPref(context)
     private val dirName = ConstantsForRecorder.dirName
     private val dirPath = ConstantsForRecorder.dirPath
     private val audioEncoder = ConstantsForRecorder.audioEncoder
@@ -29,7 +29,7 @@ class Recorder(
     }
     private var audioFile: File? = null
     private val TAG = "LOG"
-    private var flagVoiceCall = false
+    private var flagVoiceCall = false //TODO: think about pref VOICE_CALL
 
     fun startRecord(){
         if (flagStarted){
@@ -63,6 +63,14 @@ class Recorder(
             releaseRecorder()
             e.printStackTrace()
         }
+    }
+
+    fun setSpeakerphoneinCall(){
+        val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
+        audioManager.mode = AudioManager.MODE_IN_CALL
+        Log.d(TAG, "Speakerphone ON")
+        audioManager.isSpeakerphoneOn = true
+        audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0)
     }
 
     private fun createAudioFile() : Boolean {
@@ -104,12 +112,8 @@ class Recorder(
             recorder = MediaRecorder()
             val stringAudioSource = managerPref.getAudioSource()
             val audioSource = resolveAudioSource(stringAudioSource)
-            if (audioSource == MediaRecorder.AudioSource.MIC){
-                val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
-                audioManager.mode = AudioManager.MODE_IN_CALL
-                audioManager.isSpeakerphoneOn = true
-                audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0)
-            }
+            if (audioSource == MediaRecorder.AudioSource.MIC)
+                setSpeakerphoneinCall()
             recorder?.apply {
                 setAudioSource(audioSource)
                 setOutputFormat(outputFormat)
@@ -137,19 +141,19 @@ class Recorder(
 
     private fun resolveAudioSource(stringAudioSource: String): Int {
         when (stringAudioSource) {
-            context.getString(com.media.dmitry68.callrecorder.R.string.pref_audio_source_voice_communication) -> {
+            managerPref.getPrefAudioSourceVoiceCommunication() -> {
                 flagVoiceCall = false
                 return MediaRecorder.AudioSource.VOICE_COMMUNICATION
             }
-            context.getString(com.media.dmitry68.callrecorder.R.string.pref_audio_source_mic) -> {
+            managerPref.getPrefAudioSourceMic() -> {
                 flagVoiceCall = false
                 return MediaRecorder.AudioSource.MIC
             }
-            context.getString(com.media.dmitry68.callrecorder.R.string.pref_audio_source_voice_call) -> {
+            managerPref.getPrefAudioSourceVoiceCall() -> {
                 flagVoiceCall = true
                 return MediaRecorder.AudioSource.VOICE_CALL
             }
-            context.getString(com.media.dmitry68.callrecorder.R.string.pref_audio_source_default) -> {
+            managerPref.getPrefAudioSourceDefault() -> {
                 flagVoiceCall = true
                 return MediaRecorder.AudioSource.DEFAULT
             }

@@ -30,16 +30,15 @@ class MainActivity : AppCompatActivity(), MVPView{
         setContentView(R.layout.activity_main)
         Log.d(TAG, "Create MainActivity")
         managerPref = ManagerPref(this)
-        serviceManager = ServiceManager(applicationContext)
+        serviceManager = ServiceManager(applicationContext, managerPref)
         presenter = MainPresenter(this, serviceManager, permissionManager, managerPref)
         switchService.setOnCheckedChangeListener(SwitchModeListener())
-
-        presenter.setUp()
     }
 
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "Resume MainActivity")
+        presenter.setUp()
     }
 
     override fun onPause() {

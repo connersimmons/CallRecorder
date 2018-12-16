@@ -3,9 +3,10 @@ package com.media.dmitry68.callrecorder.service
 import android.content.Context
 import android.content.Intent
 import android.support.v4.content.ContextCompat
-import com.media.dmitry68.callrecorder.R
+import com.media.dmitry68.callrecorder.preferences.ManagerPref
 
-class ServiceManager(private val context: Context){
+class ServiceManager(private val context: Context,
+                     private val managerPref: ManagerPref){
     private lateinit var modeOfWork: ModeOfWork
 
     fun startCallService() {
@@ -33,11 +34,11 @@ class ServiceManager(private val context: Context){
 
     fun setModeOfWork(stringModeOfWork: String){
         modeOfWork = when(stringModeOfWork) {
-            context.getString(R.string.pref_mode_of_work_default) -> {
+            managerPref.getPrefModeOfWorkDefault() -> {
                 ModeOfWork.Background
             }
-            context.getString(R.string.pref_mode_of_work_on_demand) -> {
-                ModeOfWork.OnDemand
+            managerPref.getPrefModeOfWorkOnDemand() -> {
+                ModeOfWork.OnDemand //TODO: make nameOfFile in settings; time in notification; Mode Of Recorder in Notification; Vibrate; second mode ondemand: action start in  notification
             }
             else -> {
                 ModeOfWork.Background

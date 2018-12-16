@@ -11,16 +11,19 @@ import android.hardware.SensorManager
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import com.media.dmitry68.callrecorder.notification.NotifyManager
+import com.media.dmitry68.callrecorder.preferences.ManagerPref
 import com.media.dmitry68.callrecorder.recorder.Recorder
 import com.media.dmitry68.callrecorder.service.CallForegroundService
 import com.media.dmitry68.callrecorder.stateCall.Caller
 
 class ShakeDetector(private val appContext: Context,
-                    private val notificationManager: NotifyManager) : SensorEventListener, ShakeListener {
+                    private val notificationManager: NotifyManager,
+                    private val managerPref: ManagerPref) : SensorEventListener, ShakeListener {
     private var shakeTimeStamp = 0L
     private var shakeCount = 0
     private val TAG = "LOG"
-    private val innerReceiverForStopRecorder = ReceiverOfStopReorder()
+    private val innerReceiverForStopRecorder = ReceiverOfManageRecorder()
+    private val localBroadcastManager = LocalBroadcastManager.getInstance(appContext)
     private lateinit var recorder: Recorder
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -57,15 +60,17 @@ class ShakeDetector(private val appContext: Context,
     override fun onShake(count: Int) {
         Log.d(TAG, "Detect $count shake")
         if (count == 3) {//TODO:make count preference
-           LocalBroadcastManager.getInstance(appContext).sendBroadcast(Intent(CallForegroundService.STOP_REGISTER_SHAKE_DETECTOR))//TODO: add vibrate
-            Log.d(TAG, "Start Record")
+            localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_REGISTER_SHAKE_DETECTOR))//TODO: add vibrate
+            localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_CALL_RECEIVER))
             initRecord(appContext)
         }
     }
 
     private fun initRecord(context: Context) {
-        recorder = Recorder(Caller(), context).apply { startRecord() }
-        context.registerReceiver(innerReceiverForStopRecorder, IntentFilter(STOP_RECORD_ACTION))
+        recorder = Recorder(Caller(), context, managerPref).apply { startRecord() }
+        context.registerReceiver(innerReceiverForStopRecorder, IntentFilter(STOP_RECORD_ACTION).apply {
+            addAction(SPEAKERPHONE_ON_RECORD_ACTION)
+        })
 
         notificationManager.addAction(STOP_RECORD_ACTION)
     }
@@ -76,14 +81,23 @@ class ShakeDetector(private val appContext: Context,
         const val SHAKE_COUNT_RESET_TIME_MS = 3000
 
         const val STOP_RECORD_ACTION = "com.media.dmitry68.callrecorder.shaker.STOP_RECORD_ACTION"
+        const val SPEAKERPHONE_ON_RECORD_ACTION = "com.media.dmitry68.callrecorder.shaker.SPEAKERPHONE_ON_RECORD_ACTION"
     }
 
-    inner class ReceiverOfStopReorder : BroadcastReceiver(){
+    inner class ReceiverOfManageRecorder : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d(TAG, "Stop recorder")
-            notificationManager.removeAction()
-            recorder.stopRecord()
-            appContext.unregisterReceiver(innerReceiverForStopRecorder)
+            when (intent!!.action){
+                STOP_RECORD_ACTION -> {
+                    notificationManager.removeAction()
+                    recorder.stopRecord()
+                    context!!.unregisterReceiver(innerReceiverForStopRecorder)
+                    localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_REGISTER_SHAKE_DETECTOR))
+                    localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_CALL_RECEIVER))
+                }
+                SPEAKERPHONE_ON_RECORD_ACTION -> {
+                    recorder.setSpeakerphoneinCall()
+                }
+            }
         }
     }
 }

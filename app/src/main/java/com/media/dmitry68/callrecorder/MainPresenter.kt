@@ -25,19 +25,8 @@ class MainPresenter(
         }
     }
 
-    override fun switchCompatChange(modeService: Boolean) {
-        Log.d(TAG, "presenter: switchChange to $modeService")
-        if (modeService) {
-            serviceManager.startCallService()
-        } else {
-            serviceManager.stopCallService()
-        }
-        managerPref.setStateService(modeService)
-        model.stateOfService = modeService
-    }
-
     override fun onCheckPermission(checkPermission: Boolean) {
-       mvpView.showSwitchVisibility(checkPermission)
+        mvpView.showSwitchVisibility(checkPermission)
         if (checkPermission){
             initialSetModeOfWork()
             setSwitchCompatState(model.stateOfService)
@@ -45,8 +34,22 @@ class MainPresenter(
             setSwitchCompatState(false)
         }
     }
+
     override fun setSwitchCompatState(state: Boolean){
         mvpView.setSwitchMode(state)
+    }
+
+    override fun switchCompatChange(modeService: Boolean) {
+        if (managerPref.getStateService() != modeService) {
+            Log.d(TAG, "presenter: switchChange to $modeService")
+            if (modeService) {
+                serviceManager.startCallService()
+            } else {
+                serviceManager.stopCallService()
+            }
+            managerPref.setStateService(modeService)
+            model.stateOfService = modeService
+        }
     }
 
     override fun onChangeModeOfWork(newModeOfWork: String) {

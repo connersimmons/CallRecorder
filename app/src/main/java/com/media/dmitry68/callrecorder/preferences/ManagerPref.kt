@@ -17,7 +17,7 @@ class ManagerPref(private val context : Context) : PreferenceChangeAware(), Shar
     }
     private val TAG = "LOG"
     init {
-        Log.d(TAG, "ManagerPref register on SharedPreference change")
+        Log.d(TAG, "ManagerPref register on SharedPreferenceChangeListener")
         sharedPref.registerOnSharedPreferenceChangeListener(this)
     }
 
@@ -29,7 +29,7 @@ class ManagerPref(private val context : Context) : PreferenceChangeAware(), Shar
 
     fun getFlagShowNumber() = sharedPref.getBoolean(KEY_PREF_FLAG_SHOW_NUMBER, true)
 
-    fun getAudioSource() = sharedPref.getString(KEY_PREF_AUDIO_SOURCE, context.getString(R.string.pref_audio_source_voice_communication))!!
+    fun getAudioSource() = sharedPref.getString(KEY_PREF_AUDIO_SOURCE, getPrefAudioSourceVoiceCommunication())!!
 
     fun getStateService() = sharedPref.getBoolean(KEY_PREF_SERVICE_STATUS, false)
 
@@ -39,7 +39,19 @@ class ManagerPref(private val context : Context) : PreferenceChangeAware(), Shar
         sharedPref.apply()
     }
 
-    private fun getModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, context.getString(R.string.pref_mode_of_work_default))!!
+    fun getPrefModeOfWorkDefault(): String = context.getString(R.string.pref_mode_of_work_default)
+
+    fun getPrefModeOfWorkOnDemand(): String = context.getString(R.string.pref_mode_of_work_on_demand)
+
+    fun getPrefAudioSourceVoiceCommunication(): String = context.getString(R.string.pref_audio_source_voice_communication)
+
+    fun getPrefAudioSourceMic(): String = context.getString(R.string.pref_audio_source_mic)
+
+    fun getPrefAudioSourceVoiceCall(): String = context.getString(R.string.pref_audio_source_voice_call)
+
+    fun getPrefAudioSourceDefault(): String = context.getString(R.string.pref_audio_source_default)
+
+    private fun getModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, getPrefModeOfWorkDefault())!!
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         Log.d(TAG, "Shared Preference change : $key")

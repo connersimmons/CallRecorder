@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.telephony.TelephonyManager
 import android.util.Log
+import com.media.dmitry68.callrecorder.preferences.ManagerPref
 import com.media.dmitry68.callrecorder.recorder.Recorder
+import com.media.dmitry68.callrecorder.shaker.ShakeDetector
 import com.media.dmitry68.callrecorder.stateCall.CallStates
 import com.media.dmitry68.callrecorder.stateCall.Caller
 import com.media.dmitry68.callrecorder.stateCall.DirectionCallState
@@ -19,7 +21,8 @@ class CallReceiver : BroadcastReceiver(){
     }
     private val TAG = "LOG"
     private val incomingNumber = TelephonyManager.EXTRA_INCOMING_NUMBER
-    lateinit var recorder: Recorder
+    private lateinit var recorder: Recorder
+    private lateinit var managerPref: ManagerPref
 
     override fun onReceive(context: Context, intent: Intent?) {
         Log.d(TAG, "On receive")
@@ -30,8 +33,17 @@ class CallReceiver : BroadcastReceiver(){
             val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE)
             if (telephonyManager is TelephonyManager)
                 caller.statePhone = telephonyManager.callState
-            Log.d(TAG, "On Receive ${caller.number} ${caller.statePhone} $lastState")
-            onCallStateChanged(caller.statePhone, context)
+            managerPref = ManagerPref(context)
+            when (managerPref.propertyModeOfWork){ //TODO: make simple init modeOfWork
+                managerPref.getPrefModeOfWorkDefault() -> {
+                    Log.d(TAG, "On Receive ${caller.number} ${caller.statePhone} $lastState")
+                    onCallStateChanged(caller.statePhone, context)
+                }
+                managerPref.getPrefModeOfWorkOnDemand() -> {
+                    if (caller.statePhone == CallStates.OFFHOOK)
+                        context.sendBroadcast(Intent(ShakeDetector.SPEAKERPHONE_ON_RECORD_ACTION))
+                }
+            }
         }
     }
 
@@ -104,6 +116,6 @@ class CallReceiver : BroadcastReceiver(){
     }
 
     private fun initRecord(context: Context) {
-        recorder = Recorder(caller, context).apply { startRecord() }
+        recorder = Recorder(caller, context, managerPref).apply { startRecord() }
     }
 }
