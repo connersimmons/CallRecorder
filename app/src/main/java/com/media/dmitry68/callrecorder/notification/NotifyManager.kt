@@ -13,12 +13,18 @@ import com.media.dmitry68.callrecorder.R
 class NotifyManager(private val context: Context) {
     private lateinit var notificationBuilder: NotificationCompat.Builder
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private val contentTitle: String = context.getString(com.media.dmitry68.callrecorder.R.string.notification_title)
+    private val channelId: String = context.getString(com.media.dmitry68.callrecorder.R.string.channel_id)//TODO: make manager resource
+    private val actionStopRecorderText: String = context.getString(com.media.dmitry68.callrecorder.R.string.notification_action_stop_recorder)
+    var contentText: String = context.getString(com.media.dmitry68.callrecorder.R.string.notification_text)
 
     fun builder() : NotificationCompat.Builder {
+
+        //TODO: make for Android O NotificationChannel
         notificationBuilder=
-            NotificationCompat.Builder(context, context.getString(com.media.dmitry68.callrecorder.R.string.channel_id))
-                .setContentTitle(context.getString(com.media.dmitry68.callrecorder.R.string.notification_title))
-                .setContentText(context.getString(com.media.dmitry68.callrecorder.R.string.notification_text))
+            NotificationCompat.Builder(context, channelId)
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
                 .setSmallIcon(android.R.drawable.ic_notification_overlay)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
 
@@ -35,16 +41,23 @@ class NotifyManager(private val context: Context) {
     fun addAction(actionIntent: String){
         val intentForBroadcast = Intent(actionIntent)
         val pendingIntent = PendingIntent.getBroadcast(context, 0, intentForBroadcast, PendingIntent.FLAG_UPDATE_CURRENT)
-        notificationBuilder.addAction(NotificationCompat.Action(android.R.drawable.ic_notification_overlay,
-            context.getString(com.media.dmitry68.callrecorder.R.string.notification_action_stop_recorder),
+        notificationBuilder.addAction(NotificationCompat.Action(android.R.drawable.ic_notification_overlay,//TODO: replace icon
+            actionStopRecorderText,
             pendingIntent))
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
     fun removeAction(){
         notificationBuilder.mActions.clear()
-        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+        updateNotification()
     }
+
+    fun addText(textInNotification: String){
+        notificationBuilder.setContentText(textInNotification)
+        updateNotification()
+    }
+
+    private fun updateNotification() = notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
 
     companion object {
         const val NOTIFICATION_ID = 1

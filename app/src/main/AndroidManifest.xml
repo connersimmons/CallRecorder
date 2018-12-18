@@ -25,10 +25,6 @@
         </activity>
         <activity android:name=".preferences.SettingsActivity"/>
         <service android:name=".service.CallForegroundService"/>
-        <service
-                android:name=".service.CallJobService"
-                android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <service android:name=".service.SensorIntentService"/>
     </application>
 
 </manifest>

@@ -21,7 +21,7 @@ class CallForegroundService : Service(){
     private val innerReceiver = ReceiverOfManageShakeDetector()
     private val TAG = "LOG"
     private lateinit var notifyManager: NotifyManager
-    private lateinit var sensorManager: SensorManager
+    private var sensorManager: SensorManager? = null
     private lateinit var shakeDetector: ShakeDetector
     private lateinit var prefManager: ManagerPref
     private lateinit var state: ModeOfWork
@@ -97,8 +97,11 @@ class CallForegroundService : Service(){
     }
 
     private fun startShakeDetector() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(innerReceiver, IntentFilter(START_REGISTER_SHAKE_DETECTOR).apply {
-            addAction(STOP_REGISTER_SHAKE_DETECTOR)
+        LocalBroadcastManager.getInstance(this).registerReceiver(innerReceiver, IntentFilter(START_REGISTER_SHAKE_DETECTOR)
+            .apply {
+                addAction(STOP_REGISTER_SHAKE_DETECTOR)
+                addAction(START_CALL_RECEIVER)
+                addAction(STOP_CALL_RECEIVER)
         })
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         shakeDetector = ShakeDetector(applicationContext, notifyManager, prefManager)
@@ -124,17 +127,20 @@ class CallForegroundService : Service(){
 
     private fun unRegisterShakeDetector(){
         Log.d(TAG, "Unregister shake detector")
-        sensorManager.unregisterListener(shakeDetector)
+        sensorManager!!.unregisterListener(shakeDetector)
     }
 
     companion object {
         const val START_FOREGROUND_AUTO_CALL_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.START_FOREGROUND_AUTO_CALL_RECORD"
         const val STOP_FOREGROUND_AUTO_CALL_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.STOP_FOREGROUND_AUTO_CALL_RECORD"
+
         const val START_FOREGROUND_ON_DEMAND_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.START_FOREGROUND_ON_DEMAND_RECORD_ACTION"
         const val STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION"
+
         const val START_REGISTER_SHAKE_DETECTOR = "com.media.dmitry68.callrecorder.service.START_REGISTER_SHAKE_DETECTOR"
-        const val START_CALL_RECEIVER = "com.media.dmitry68.callrecorder.service.START_CALL_RECEIVER"
         const val STOP_REGISTER_SHAKE_DETECTOR = "com.media.dmitry68.callrecorder.service.STOP_REGISTER_SHAKE_DETECTOR"
+
+        const val START_CALL_RECEIVER = "com.media.dmitry68.callrecorder.service.START_CALL_RECEIVER"
         const val STOP_CALL_RECEIVER = "com.media.dmitry68.callrecorder.service.STOP_CALL_RECEIVER"
     }
 
@@ -149,8 +155,8 @@ class CallForegroundService : Service(){
                 }
                 START_REGISTER_SHAKE_DETECTOR -> {
                     Log.d(TAG, "Start register shake detector")
-                    val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-                    sensorManager.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
+                    val accelerometer = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+                    sensorManager!!.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
                 }
                 STOP_REGISTER_SHAKE_DETECTOR -> {
                     Log.d(TAG, "Stop register shake detector")

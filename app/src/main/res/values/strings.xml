@@ -18,8 +18,8 @@
     <string name="pref_audio_source_voice_call">VOICE_CALL</string>
     <string name="pref_audio_source_default">DEFAULT</string>
     <string name="channel_id">channel_id</string>
-    <string name="notification_title">Call Recording</string>
-    <string name="notification_text">Recorder On</string>
+    <string name="notification_title">Call Recorder</string>
+    <string name="notification_text">Recorder ready</string>
     <string name="state_service">Recorder</string>
     <string name="pref_category_general">General</string>
     <string name="pref_mode_of_work_default">Background</string>
