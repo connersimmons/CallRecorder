@@ -1,13 +1,8 @@
 package com.media.dmitry68.callrecorder.stopwatch
 
-import android.os.Handler
 import android.os.SystemClock
-import com.media.dmitry68.callrecorder.notification.NotifyManager
 
-
-class Stopwatch(private val notifyManager: NotifyManager,
-                private val handler: Handler? = null
-): Runnable {
+class Stopwatch(private val handler: StopwatchManager? = null): Runnable {
     private var millisecondTime = 0L
     private var startTime = SystemClock.uptimeMillis()
     private var timeBuff = 0L
@@ -22,7 +17,9 @@ class Stopwatch(private val notifyManager: NotifyManager,
     private var minutesText: String? = null
     private var hourText: String? = null
 
-    private var stopwatchText: String? = null
+    companion object {
+        var stopwatchText: String? = null
+    }
 
     override fun run() {
         millisecondTime = SystemClock.uptimeMillis() - startTime
@@ -37,9 +34,9 @@ class Stopwatch(private val notifyManager: NotifyManager,
 
         secondsText =
                 if (seconds.toString().length < 2){
-                    "0" + seconds.toString() + ":"
+                    "0" + seconds.toString()
                 } else {
-                    seconds.toString() + ":"
+                    seconds.toString()
                 }
         minutesText =
                 if (minutes.toString().length < 2){
@@ -60,7 +57,6 @@ class Stopwatch(private val notifyManager: NotifyManager,
             append(secondsText)
         }.toString()
 
-        notifyManager.addText(stopwatchText ?: "")
         handler!!.post(this)
     }
 }

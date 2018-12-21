@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.app.TaskStackBuilder
 import com.media.dmitry68.callrecorder.MainActivity
 import com.media.dmitry68.callrecorder.R
+import com.media.dmitry68.callrecorder.stopwatch.Stopwatch
 
 class NotifyManager(private val context: Context) {
     private lateinit var notificationBuilder: NotificationCompat.Builder
@@ -44,7 +45,8 @@ class NotifyManager(private val context: Context) {
         notificationBuilder.addAction(NotificationCompat.Action(android.R.drawable.ic_notification_overlay,//TODO: replace icon
             actionStopRecorderText,
             pendingIntent))
-        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+        updateNotification()
+
     }
 
     fun removeAction(){
@@ -52,8 +54,8 @@ class NotifyManager(private val context: Context) {
         updateNotification()
     }
 
-    fun addText(textInNotification: String){
-        notificationBuilder.setContentText(textInNotification)
+    fun addText(){
+        notificationBuilder.setContentText(Stopwatch.stopwatchText)
         updateNotification()
     }
 

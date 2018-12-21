@@ -33,12 +33,12 @@ class MainActivity : AppCompatActivity(), MVPView{
         serviceManager = ServiceManager(applicationContext, managerPref)
         presenter = MainPresenter(this, serviceManager, permissionManager, managerPref)
         switchService.setOnCheckedChangeListener(SwitchModeListener())
+        presenter.setUp()
     }
 
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "Resume MainActivity")
-        presenter.setUp()
     }
 
     override fun onPause() {

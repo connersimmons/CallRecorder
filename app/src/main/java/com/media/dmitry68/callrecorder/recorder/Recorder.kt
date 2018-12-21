@@ -65,7 +65,7 @@ class Recorder(
         }
     }
 
-    fun setSpeakerphoneinCall(){
+    fun setSpeakerphoneInCall(){
         val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
         audioManager.mode = AudioManager.MODE_IN_CALL
         Log.d(TAG, "Speakerphone ON")
@@ -113,7 +113,7 @@ class Recorder(
             val stringAudioSource = managerPref.getAudioSource()
             val audioSource = resolveAudioSource(stringAudioSource)
             if (audioSource == MediaRecorder.AudioSource.MIC)
-                setSpeakerphoneinCall()
+                setSpeakerphoneInCall()
             recorder?.apply {
                 setAudioSource(audioSource)
                 setOutputFormat(outputFormat)

@@ -26,6 +26,7 @@ class ShakeDetector(private val appContext: Context,
     private val innerReceiverForStopRecorder = ReceiverOfManageRecorder()
     private val localBroadcastManager = LocalBroadcastManager.getInstance(appContext)
     private lateinit var recorder: Recorder
+    private lateinit var stopwatchManager: StopwatchManager
 
     override fun onSensorChanged(event: SensorEvent?) {
         val x = event!!.values[0]
@@ -64,7 +65,8 @@ class ShakeDetector(private val appContext: Context,
             localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_REGISTER_SHAKE_DETECTOR))//TODO: add vibrate
             localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_CALL_RECEIVER))
             initRecord(appContext)
-            StopwatchManager.start(notificationManager)
+            stopwatchManager = StopwatchManager(notificationManager)
+            stopwatchManager.start()
         }
     }
 
@@ -92,14 +94,13 @@ class ShakeDetector(private val appContext: Context,
                 STOP_RECORD_ACTION -> {
                     notificationManager.removeAction()
                     recorder.stopRecord()
-                    StopwatchManager.stop()
-                    notificationManager.addText(notificationManager.contentText)
+                    stopwatchManager.stop()
                     context!!.unregisterReceiver(innerReceiverForStopRecorder)
                     localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_REGISTER_SHAKE_DETECTOR))
                     localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_CALL_RECEIVER))
                 }
                 SPEAKERPHONE_ON_RECORD_ACTION -> {
-                    recorder.setSpeakerphoneinCall()
+                    recorder.setSpeakerphoneInCall()
                 }
             }
         }
