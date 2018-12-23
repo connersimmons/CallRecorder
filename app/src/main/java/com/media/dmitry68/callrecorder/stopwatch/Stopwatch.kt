@@ -17,9 +17,7 @@ class Stopwatch(private val handler: StopwatchManager? = null): Runnable {
     private var minutesText: String? = null
     private var hourText: String? = null
 
-    companion object {
-        var stopwatchText: String? = null
-    }
+    private var stopwatchText: String? = null
 
     override fun run() {
         millisecondTime = SystemClock.uptimeMillis() - startTime
@@ -57,6 +55,7 @@ class Stopwatch(private val handler: StopwatchManager? = null): Runnable {
             append(secondsText)
         }.toString()
 
-        handler!!.post(this)
+        handler?.onTickOneSecond(stopwatchText ?: "")
+        handler?.postDelayed(this, 1000)
     }
 }

@@ -15,9 +15,11 @@ class MainPresenter(
     private val TAG = "LOG"
     private val model = MVPModel()
 
+
     override fun setUp() {
         val initialState = managerPref.getStateService()
         model.stateOfService = initialState
+        serviceManager.presenter = this
         if (!permissionManager.checkPermission())
             permissionManager.requestPermission()
         else {
@@ -53,11 +55,16 @@ class MainPresenter(
     }
 
     override fun onChangeModeOfWork(newModeOfWork: String) {
-        val oldState = model.stateOfService
-        if (oldState)
+        Log.d(TAG, "presenter: onChangeModeOfWork stateOfService ${model.stateOfService} newModeOfWork $newModeOfWork")
+        if (model.stateOfService){
+            serviceManager.registerReceiverForRestartService()
             setSwitchCompatState(false)
+        }
         serviceManager.setModeOfWork(newModeOfWork)
-        setSwitchCompatState(oldState)
+    }
+
+    override fun onStopServiceForHisRestart(){
+        setSwitchCompatState(true)
     }
 
     private fun initialSetModeOfWork(){
@@ -68,5 +75,6 @@ class MainPresenter(
             onChangeModeOfWork(event.newValue.toString())
         })
     }
+
 
 }

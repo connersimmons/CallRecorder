@@ -11,4 +11,6 @@ interface MVPPresenter {
     fun onCheckPermission(checkPermission: Boolean)
 
     fun onChangeModeOfWork(newModeOfWork: String)
+
+    fun onStopServiceForHisRestart()
 }

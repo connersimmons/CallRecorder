@@ -20,66 +20,76 @@ class CallForegroundService : Service(){
     private var callReceiver: CallReceiver? = null
     private val innerReceiver = ReceiverOfManageShakeDetector()
     private val TAG = "LOG"
-    private lateinit var notifyManager: NotifyManager
     private var sensorManager: SensorManager? = null
+    private lateinit var notifyManager: NotifyManager
+    private lateinit var serviceOnDemandManager: ServiceOnDemandManager
     private lateinit var shakeDetector: ShakeDetector
     private lateinit var prefManager: ManagerPref
     private lateinit var state: ModeOfWork
+    private lateinit var localBroadcastManager: LocalBroadcastManager
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
     override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "Service: onDestroy")
         when (state) {
             ModeOfWork.Background ->
                 stopCallReceiver()
             ModeOfWork.OnDemand -> {
                 stopListenerAndInnerReceiver()
-                stopForegroundService()
             }
         }
         prefManager.setStateService(false)
-        super.onDestroy()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        prefManager.setStateService(false)
         super.onTaskRemoved(rootIntent)
+        prefManager.setStateService(false)
         Log.d(TAG, "Service on Task removed")
     }
 
     override fun onCreate() {
         super.onCreate()
         prefManager = ManagerPref(applicationContext)
-        Log.d(TAG, "Service create")
+        localBroadcastManager = LocalBroadcastManager.getInstance(applicationContext)
+        Log.d(TAG, "Service onCreate")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         when (intent?.action) {
             START_FOREGROUND_AUTO_CALL_RECORD_ACTION -> {
+                Log.d(TAG, "onStartCommand: START_FOREGROUND_AUTO_CALL_RECORD_ACTION")
                 state = ModeOfWork.Background
                 startCallReceiver()
                 startNotification()
             }
             STOP_FOREGROUND_AUTO_CALL_RECORD_ACTION -> {
+                Log.d(TAG, "onStartCommand: STOP_FOREGROUND_AUTO_CALL_RECORD_ACTION")
                 state = ModeOfWork.Background
                 stopForegroundService()
             }
             START_FOREGROUND_ON_DEMAND_RECORD_ACTION -> {
+                Log.d(TAG, "onStartCommand: START_FOREGROUND_ON_DEMAND_RECORD_ACTION")
                 state = ModeOfWork.OnDemand
-                Log.d(TAG, "Register shake detector")
                 startNotification()
+                initOnDemandManagers()
                 startShakeDetector()
             }
-            STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION -> {
+            STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION -> { //TODO: add stop record
+                Log.d(TAG, "onStartCommand: STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION")
                 state = ModeOfWork.OnDemand
-                stopListenerAndInnerReceiver()
                 stopForegroundService()
             }
         }
         return START_REDELIVER_INTENT
+    }
+
+    private fun initOnDemandManagers(){
+        serviceOnDemandManager = ServiceOnDemandManager(applicationContext, notifyManager, prefManager)
     }
 
     private fun startNotification(){
@@ -97,19 +107,26 @@ class CallForegroundService : Service(){
     }
 
     private fun startShakeDetector() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(innerReceiver, IntentFilter(START_REGISTER_SHAKE_DETECTOR)
+        localBroadcastManager.registerReceiver(innerReceiver, IntentFilter(START_REGISTER_SHAKE_DETECTOR)
             .apply {
                 addAction(STOP_REGISTER_SHAKE_DETECTOR)
                 addAction(START_CALL_RECEIVER)
                 addAction(STOP_CALL_RECEIVER)
         })
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        shakeDetector = ShakeDetector(applicationContext, notifyManager, prefManager)
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(START_REGISTER_SHAKE_DETECTOR))
+        shakeDetector = ShakeDetector(serviceOnDemandManager)
+        registerShakeDetector()
+    }
+
+    private fun registerShakeDetector(){
+        Log.d(TAG, "Start register shake detector")
+        val accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        sensorManager?.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     private fun stopListenerAndInnerReceiver(){
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(innerReceiver)
+        Log.d(TAG, "Stop listeners and inner receivers")
+        localBroadcastManager.unregisterReceiver(innerReceiver)
         unRegisterShakeDetector()
     }
 
@@ -117,6 +134,7 @@ class CallForegroundService : Service(){
         Log.d(TAG, "Stop foreground Service")
         stopForeground(true)
         stopSelf()
+        localBroadcastManager.sendBroadcast(Intent(STOP_FOREGROUND_SERVICE))
     }
 
     private fun stopCallReceiver() {
@@ -127,10 +145,12 @@ class CallForegroundService : Service(){
 
     private fun unRegisterShakeDetector(){
         Log.d(TAG, "Unregister shake detector")
-        sensorManager!!.unregisterListener(shakeDetector)
+        sensorManager?.unregisterListener(shakeDetector)
     }
 
     companion object {
+        const val STOP_FOREGROUND_SERVICE = "com.media.dmitry68.callrecorder.service.STOP_FOREGROUND_SERVICE"
+
         const val START_FOREGROUND_AUTO_CALL_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.START_FOREGROUND_AUTO_CALL_RECORD"
         const val STOP_FOREGROUND_AUTO_CALL_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.STOP_FOREGROUND_AUTO_CALL_RECORD"
 
@@ -154,9 +174,7 @@ class CallForegroundService : Service(){
                     stopCallReceiver()
                 }
                 START_REGISTER_SHAKE_DETECTOR -> {
-                    Log.d(TAG, "Start register shake detector")
-                    val accelerometer = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-                    sensorManager!!.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
+                    registerShakeDetector()
                 }
                 STOP_REGISTER_SHAKE_DETECTOR -> {
                     Log.d(TAG, "Stop register shake detector")

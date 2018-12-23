@@ -41,7 +41,7 @@ class Recorder(
             prepareRecorder()
             Thread.sleep(2000)
             try {
-                recorder!!.start()
+                recorder?.start()
             } catch (e: Exception){
                 e.printStackTrace()
                 audioFile?.delete()
@@ -98,7 +98,7 @@ class Recorder(
                 append(suffix)
             }.toString()
             audioFile = File(audioDir, fileNameBuilder)
-            audioFile!!.createNewFile()
+            audioFile?.createNewFile()
             return true
         }catch (e: Exception){
             Log.d(TAG, "unknown exception on prepare file")
@@ -118,7 +118,7 @@ class Recorder(
                 setAudioSource(audioSource)
                 setOutputFormat(outputFormat)
                 setAudioEncoder(audioEncoder)
-                setOutputFile(audioFile!!.absolutePath)
+                setOutputFile(audioFile?.absolutePath)
                 setOnErrorListener { _, what, _ -> Log.d(TAG, "error while recording: $what") }
             }
             try {

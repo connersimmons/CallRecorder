@@ -101,8 +101,8 @@ class MainActivity : AppCompatActivity(), MVPView{
     }
 
     override fun setSwitchMode(b: Boolean){
-        switchService.isChecked = b
         Log.d(TAG, "View: switch to $b")
+        switchService.isChecked = b
     }
 
     companion object {

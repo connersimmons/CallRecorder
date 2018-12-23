@@ -7,7 +7,7 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import com.media.dmitry68.callrecorder.preferences.ManagerPref
 import com.media.dmitry68.callrecorder.recorder.Recorder
-import com.media.dmitry68.callrecorder.shaker.ShakeDetector
+import com.media.dmitry68.callrecorder.service.ServiceOnDemandManager
 import com.media.dmitry68.callrecorder.stateCall.CallStates
 import com.media.dmitry68.callrecorder.stateCall.Caller
 import com.media.dmitry68.callrecorder.stateCall.DirectionCallState
@@ -26,7 +26,7 @@ class CallReceiver : BroadcastReceiver(){
 
     override fun onReceive(context: Context, intent: Intent?) {
         Log.d(TAG, "On receive")
-        if (intent!!.action == IntentActions.PHONE_STAGE_CHANGED) {
+        if (intent?.action == IntentActions.PHONE_STAGE_CHANGED) {
             if (intent.hasExtra(incomingNumber)) {
                 caller.number = intent.getStringExtra(incomingNumber)
             }
@@ -41,7 +41,7 @@ class CallReceiver : BroadcastReceiver(){
                 }
                 managerPref.getPrefModeOfWorkOnDemand() -> {
                     if (caller.statePhone == CallStates.OFFHOOK)
-                        context.sendBroadcast(Intent(ShakeDetector.SPEAKERPHONE_ON_RECORD_ACTION))
+                        context.sendBroadcast(Intent(ServiceOnDemandManager.SPEAKERPHONE_ON_RECORD_ACTION))
                 }
             }
         }

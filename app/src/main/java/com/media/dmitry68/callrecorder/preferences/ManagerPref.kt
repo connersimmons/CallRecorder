@@ -54,7 +54,7 @@ class ManagerPref(private val context : Context) : PreferenceChangeAware(), Shar
     private fun getModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, getPrefModeOfWorkDefault())!!
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        Log.d(TAG, "Shared Preference change : $key")
+    //    Log.d(TAG, "Shared Preference change : $key")
         if (key.equals(KEY_PREF_MODE_OF_WORK)){
             propertyModeOfWork = getModeOfWorkInSharedPref()
         }
