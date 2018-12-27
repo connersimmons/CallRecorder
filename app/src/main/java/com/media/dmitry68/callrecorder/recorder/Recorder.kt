@@ -14,10 +14,10 @@ import java.lang.IllegalStateException
 
 class Recorder(
     private val caller: Caller,
-    private val context: Context,
-    private val managerPref: ManagerPref//TODO: make another singleton ManagerResource
+    private val context: Context
 )
 {
+    private val managerPref = ManagerPref(context)
     private val dirName = ConstantsForRecorder.dirName
     private val dirPath = ConstantsForRecorder.dirPath
     private val audioEncoder = ConstantsForRecorder.audioEncoder

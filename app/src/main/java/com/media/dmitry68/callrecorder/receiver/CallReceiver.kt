@@ -116,6 +116,6 @@ class CallReceiver : BroadcastReceiver(){
     }
 
     private fun initRecord(context: Context) {
-        recorder = Recorder(caller, context, managerPref).apply { startRecord() }
+        recorder = Recorder(caller, context).apply { startRecord() }
     }
 }

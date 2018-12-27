@@ -11,6 +11,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         setPreferencesFromResource(R.xml.preferences, p1)
         setSummary(ManagerPref.KEY_PREF_AUDIO_SOURCE)
         setSummary(ManagerPref.KEY_PREF_MODE_OF_WORK)
+        setSummary(ManagerPref.KEY_PREF_FILE_NAME)
     }
 
     override fun onResume() {
@@ -24,10 +25,17 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (key.equals(ManagerPref.KEY_PREF_AUDIO_SOURCE))
-            setSummary(ManagerPref.KEY_PREF_AUDIO_SOURCE)
-        if (key.equals(ManagerPref.KEY_PREF_MODE_OF_WORK))
-            setSummary(ManagerPref.KEY_PREF_MODE_OF_WORK)
+        when (key){
+            ManagerPref.KEY_PREF_AUDIO_SOURCE -> {
+                setSummary(ManagerPref.KEY_PREF_AUDIO_SOURCE)
+            }
+            ManagerPref.KEY_PREF_MODE_OF_WORK -> {
+                setSummary(ManagerPref.KEY_PREF_MODE_OF_WORK)
+            }
+            ManagerPref.KEY_PREF_FILE_NAME -> {
+                setSummary(ManagerPref.KEY_PREF_FILE_NAME)
+            }
+        }
     }
 
     private fun setSummary(key: String) {

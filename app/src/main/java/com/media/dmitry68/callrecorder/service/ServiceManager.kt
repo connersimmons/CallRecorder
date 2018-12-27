@@ -10,9 +10,9 @@ import android.util.Log
 import com.media.dmitry68.callrecorder.MVPPresenter
 import com.media.dmitry68.callrecorder.preferences.ManagerPref
 
-class ServiceManager(private val context: Context,
-                     private val managerPref: ManagerPref){
+class ServiceManager(private val context: Context){
 
+    private val managerPref = ManagerPref(context)
     var presenter: MVPPresenter? = null
     private lateinit var modeOfWork: ModeOfWork
     private val innerReceiverOnRestartService = ReceiverOnRestartService()
@@ -56,7 +56,7 @@ class ServiceManager(private val context: Context,
                 ModeOfWork.Background
             }
             managerPref.getPrefModeOfWorkOnDemand() -> {
-                ModeOfWork.OnDemand //TODO: make nameOfFile in settings; Mode Of Recorder in Notification; Vibrate; second mode ondemand: action start in  notification
+                ModeOfWork.OnDemand //TODO: make nameOfFile in settings; Mode Of Recorder in Notification; second mode ondemand: action start in  notification
             }
             else -> {
                 ModeOfWork.Background

@@ -16,7 +16,8 @@ class ManagerPref(private val context : Context) : PreferenceChangeAware(), Shar
             newValue: Any -> propertyChangeSupport.firePropertyChange(property.name, oldValue, newValue)
     }
     private val TAG = "LOG"
-    init {
+
+    fun registerListenerOnSharedPref() {
         Log.d(TAG, "ManagerPref register on SharedPreferenceChangeListener")
         sharedPref.registerOnSharedPreferenceChangeListener(this)
     }

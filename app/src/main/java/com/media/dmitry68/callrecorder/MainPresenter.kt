@@ -20,6 +20,7 @@ class MainPresenter(
         val initialState = managerPref.getStateService()
         model.stateOfService = initialState
         serviceManager.presenter = this
+        managerPref.registerListenerOnSharedPref()
         if (!permissionManager.checkPermission())
             permissionManager.requestPermission()
         else {
