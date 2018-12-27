@@ -1,28 +1,18 @@
 package com.media.dmitry68.callrecorder.preferences
 
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.preference.PreferenceManager
 import android.util.Log
+import com.media.dmitry68.callrecorder.MainPresenter
 import com.media.dmitry68.callrecorder.R
-import kotlin.properties.Delegates
-import kotlin.reflect.KProperty
 
-class ManagerPref(private val context : Context) : PreferenceChangeAware(), SharedPreferences.OnSharedPreferenceChangeListener {
+class ManagerPref(private val context : Context){
+    var presenter: MainPresenter? = null
+    private val receiverOnChangePref = ReceiverOnChangePref()
     private val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-    private val observer = {
-            property: KProperty<*>,
-            oldValue: Any,
-            newValue: Any -> propertyChangeSupport.firePropertyChange(property.name, oldValue, newValue)
-    }
+    private val localBroadcastManager = LocalBroadcastManager.getInstance(context)
     private val TAG = "LOG"
-
-    fun registerListenerOnSharedPref() {
-        Log.d(TAG, "ManagerPref register on SharedPreferenceChangeListener")
-        sharedPref.registerOnSharedPreferenceChangeListener(this)
-    }
-
-    var propertyModeOfWork: String by Delegates.observable(getModeOfWorkInSharedPref(), observer)
 
     fun getFileName() = sharedPref.getString(KEY_PREF_FILE_NAME, context.getString(R.string.pref_file_name))!!
 
@@ -52,13 +42,19 @@ class ManagerPref(private val context : Context) : PreferenceChangeAware(), Shar
 
     fun getPrefAudioSourceDefault(): String = context.getString(R.string.pref_audio_source_default)
 
-    private fun getModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, getPrefModeOfWorkDefault())!!
+    fun getModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, getPrefModeOfWorkDefault())!!
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-    //    Log.d(TAG, "Shared Preference change : $key")
-        if (key.equals(KEY_PREF_MODE_OF_WORK)){
-            propertyModeOfWork = getModeOfWorkInSharedPref()
+    fun registerListenerOnSharedPref() {
+        Log.d(TAG, "ManagerPref register on SharedPreferenceChangeReceiver")
+        val intentFilterOnChangeModeOfWork = IntentFilter(SettingsFragment.CHANGE_PREFERENCE_MODE_OF_WORK).apply {
+            addAction(SettingsFragment.PAUSE_PREFERENCE_FRAGMENT)
         }
+        localBroadcastManager.registerReceiver(receiverOnChangePref, intentFilterOnChangeModeOfWork)
+    }
+
+    private fun unRegisterListenerOnSharedPref() {
+        Log.d(TAG, "ManagerPref unregister on SharedPreferenceChangeReceiver")
+        localBroadcastManager.unregisterReceiver(receiverOnChangePref)
     }
 
     companion object {
@@ -68,5 +64,19 @@ class ManagerPref(private val context : Context) : PreferenceChangeAware(), Shar
         const val KEY_PREF_AUDIO_SOURCE = "pref_audio_source"
         const val KEY_PREF_SERVICE_STATUS = "pref_service_status"
         const val KEY_PREF_MODE_OF_WORK = "pref_mode_of_work"
+    }
+
+    inner class ReceiverOnChangePref: BroadcastReceiver(){
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                SettingsFragment.PAUSE_PREFERENCE_FRAGMENT -> {
+                    unRegisterListenerOnSharedPref()
+                }
+                SettingsFragment.CHANGE_PREFERENCE_MODE_OF_WORK -> {
+                    Log.d(TAG, "ManagerPref: CHANGE_PREFERENCE_MODE_OF_WORK")
+                    presenter?.onChangeModeOfWork(getModeOfWorkInSharedPref())
+                }
+            }
+        }
     }
 }

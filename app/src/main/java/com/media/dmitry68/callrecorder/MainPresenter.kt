@@ -4,7 +4,6 @@ import android.util.Log
 import com.media.dmitry68.callrecorder.permissions.PermissionManager
 import com.media.dmitry68.callrecorder.preferences.ManagerPref
 import com.media.dmitry68.callrecorder.service.ServiceManager
-import java.beans.PropertyChangeListener
 
 class MainPresenter(
     private val mvpView: MVPView,
@@ -20,7 +19,7 @@ class MainPresenter(
         val initialState = managerPref.getStateService()
         model.stateOfService = initialState
         serviceManager.presenter = this
-        managerPref.registerListenerOnSharedPref()
+        managerPref.presenter = this
         if (!permissionManager.checkPermission())
             permissionManager.requestPermission()
         else {
@@ -68,13 +67,14 @@ class MainPresenter(
         setSwitchCompatState(true)
     }
 
+    override fun onStartPreferenceFragment() {
+        managerPref.registerListenerOnSharedPref()
+    }
+
     private fun initialSetModeOfWork(){
-        serviceManager.setModeOfWork(managerPref.propertyModeOfWork)
-        Log.d(TAG, "presenter: Setup in initialState: ${model.stateOfService} in mode of work: ${managerPref.propertyModeOfWork}")
-        managerPref.addPropertyChangeListener(PropertyChangeListener { event ->
-            Log.d(TAG, "${event.propertyName} changed from ${event.oldValue} to ${event.newValue}")
-            onChangeModeOfWork(event.newValue.toString())
-        })
+        val initialModeOfWork = managerPref.getModeOfWorkInSharedPref()
+        serviceManager.setModeOfWork(initialModeOfWork)
+        Log.d(TAG, "presenter: Setup in initialState: ${model.stateOfService} in mode of work: $initialModeOfWork")
     }
 
 

@@ -79,7 +79,7 @@ class CallForegroundService : Service(){
                 initOnDemandManagers()
                 startShakeDetector()
             }
-            STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION -> { //TODO: add stop record
+            STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION -> { //TODO: add stop record(if record start)(!!!!)
                 Log.d(TAG, "onStartCommand: STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION")
                 state = ModeOfWork.OnDemand
                 stopForegroundService()
@@ -89,7 +89,7 @@ class CallForegroundService : Service(){
     }
 
     private fun initOnDemandManagers(){
-        serviceOnDemandManager = ServiceOnDemandManager(applicationContext, notifyManager, prefManager)
+        serviceOnDemandManager = ServiceOnDemandManager(applicationContext, notifyManager)
     }
 
     private fun startNotification(){
@@ -166,7 +166,7 @@ class CallForegroundService : Service(){
 
     inner class ReceiverOfManageShakeDetector : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
-            when(intent!!.action) {
+            when(intent?.action) {
                 START_CALL_RECEIVER -> {
                     startCallReceiver()
                 }

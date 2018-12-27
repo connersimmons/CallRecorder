@@ -7,16 +7,13 @@ import android.content.IntentFilter
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import com.media.dmitry68.callrecorder.notification.NotifyManager
-import com.media.dmitry68.callrecorder.preferences.ManagerPref
 import com.media.dmitry68.callrecorder.recorder.Recorder
 import com.media.dmitry68.callrecorder.stateCall.Caller
 import com.media.dmitry68.callrecorder.stopwatch.StopwatchManager
 import com.media.dmitry68.callrecorder.vibrator.VibrateManager
 
 class ServiceOnDemandManager(private val appContext: Context,
-                             private val notificationManager: NotifyManager,
-                             private val managerPref: ManagerPref
-) {
+                             private val notificationManager: NotifyManager) {
     private val innerReceiverForStopRecorder = ReceiverOfManageRecorder()
     private val localBroadcastManager = LocalBroadcastManager.getInstance(appContext)
     private lateinit var recorder: Recorder
@@ -42,7 +39,7 @@ class ServiceOnDemandManager(private val appContext: Context,
     }
 
     private fun initRecord(context: Context) {
-        recorder = Recorder(Caller(), context, managerPref).apply { startRecord() }
+        recorder = Recorder(Caller(), context).apply { startRecord() }
         context.registerReceiver(innerReceiverForStopRecorder, IntentFilter(STOP_RECORD_ACTION_ON_SHAKE_DETECTOR).apply {
             addAction(SPEAKERPHONE_ON_RECORD_ACTION)
         })

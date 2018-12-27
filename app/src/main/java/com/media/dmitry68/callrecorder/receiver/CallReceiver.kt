@@ -34,7 +34,7 @@ class CallReceiver : BroadcastReceiver(){
             if (telephonyManager is TelephonyManager)
                 caller.statePhone = telephonyManager.callState
             managerPref = ManagerPref(context)
-            when (managerPref.propertyModeOfWork){ //TODO: make simple init modeOfWork
+            when (managerPref.getModeOfWorkInSharedPref()){ //TODO: make simple init modeOfWork
                 managerPref.getPrefModeOfWorkDefault() -> {
                     Log.d(TAG, "On Receive ${caller.number} ${caller.statePhone} $lastState")
                     onCallStateChanged(caller.statePhone, context)

@@ -13,4 +13,6 @@ interface MVPPresenter {
     fun onChangeModeOfWork(newModeOfWork: String)
 
     fun onStopServiceForHisRestart()
+
+    fun onStartPreferenceFragment()
 }

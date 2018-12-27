@@ -87,6 +87,7 @@ class MainActivity : AppCompatActivity(), MVPView{
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.action_settings -> {
+                presenter.onStartPreferenceFragment()
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivityForResult(intent, REQUEST_SETTINGS)
                 return true

@@ -78,5 +78,4 @@ class ServiceManager(private val context: Context){
             LocalBroadcastManager.getInstance(context!!).unregisterReceiver(innerReceiverOnRestartService)
         }
     }
-
 }
