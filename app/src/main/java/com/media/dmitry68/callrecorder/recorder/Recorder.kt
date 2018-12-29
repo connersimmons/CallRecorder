@@ -30,6 +30,10 @@ class Recorder(
     private var audioFile: File? = null
     private val TAG = "LOG"
     private var flagVoiceCall = false //TODO: think about pref VOICE_CALL
+    private val flagShowDirection = managerPref.getFlagShowDirectionCall()
+    private val flagShowNumber = managerPref.getFlagShowNumber()
+    private val suffix = ".amr"
+    private val audioDir = File("$dirPath/$dirName/${caller.formatStartTalkForDir()}")
 
     fun startRecord(){
         if (flagStarted){
@@ -73,39 +77,40 @@ class Recorder(
         audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0)
     }
 
+    fun addToAudioFileCallNumberAndDirection(){
+        val newFileNameBuilder = buildFileName()
+        val newAudioFile = File(audioDir, newFileNameBuilder)
+        audioFile?.renameTo(newAudioFile)
+    }
+
     private fun createAudioFile() : Boolean {
-        try {
-            val audioDir = File("$dirPath/$dirName/${caller.formatStartTalkForDir()}")
+        return try {
             if (!audioDir.exists())
                 audioDir.mkdirs()
-
-            val flagShowDirection = managerPref.getFlagShowDirectionCall()
-            val flagShowNumber = managerPref.getFlagShowNumber()
-            val suffix = ".amr"
-
-            val fileNameBuilder = StringBuilder().apply {
-                append(managerPref.getFileName())
-                append("_")
-                if (flagShowNumber) {
-                    append(caller.number)
-                    append("_")
-                }
-                if (flagShowDirection) {
-                    append(caller.directCallState)
-                    append("_")
-                }
-                append(caller.formatStartTalkForFile())
-                append(suffix)
-            }.toString()
+            val fileNameBuilder = buildFileName()
             audioFile = File(audioDir, fileNameBuilder)
             audioFile?.createNewFile()
-            return true
-        }catch (e: Exception){
+            true
+        } catch (e: Exception){
             Log.d(TAG, "unknown exception on prepare file")
-
-            return false
+            false
         }
     }
+
+    private fun buildFileName() = StringBuilder().apply {
+        append(managerPref.getFileName())
+        append("_")
+        if (flagShowNumber) {
+            append(caller.number)
+            append("_")
+        }
+        if (flagShowDirection) {
+            append(caller.directCallState)
+            append("_")
+        }
+        append(caller.formatStartTalkForFile())
+        append(suffix)
+    }.toString()
 
     private fun prepareRecorder(): Boolean {
         try {
@@ -171,6 +176,4 @@ class Recorder(
         }
         recorder = null
     }
-
-
 }

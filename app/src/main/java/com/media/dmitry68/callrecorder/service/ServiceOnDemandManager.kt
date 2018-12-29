@@ -41,7 +41,7 @@ class ServiceOnDemandManager(private val appContext: Context,
     private fun initRecord(context: Context) {
         recorder = Recorder(Caller(), context).apply { startRecord() }
         context.registerReceiver(innerReceiverForStopRecorder, IntentFilter(STOP_RECORD_ACTION_ON_SHAKE_DETECTOR).apply {
-            addAction(SPEAKERPHONE_ON_RECORD_ACTION)
+            addAction(ON_CALL_STATE_CHANGED)
         })
         notificationManager.addAction(STOP_RECORD_ACTION_ON_SHAKE_DETECTOR)
     }
@@ -56,7 +56,7 @@ class ServiceOnDemandManager(private val appContext: Context,
 
     companion object {
         const val STOP_RECORD_ACTION_ON_SHAKE_DETECTOR = "com.media.dmitry68.callrecorder.service.STOP_RECORD_ACTION_ON_SHAKE_DETECTOR"
-        const val SPEAKERPHONE_ON_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.SPEAKERPHONE_ON_RECORD_ACTION"
+        const val ON_CALL_STATE_CHANGED = "com.media.dmitry68.callrecorder.service.ON_CALL_STATE_CHANGED"
     }
 
     inner class ReceiverOfManageRecorder : BroadcastReceiver(){
@@ -66,7 +66,7 @@ class ServiceOnDemandManager(private val appContext: Context,
                     stopRecordOnShakeDetector()
                     context?.unregisterReceiver(innerReceiverForStopRecorder)
                 }
-                SPEAKERPHONE_ON_RECORD_ACTION -> {
+                ON_CALL_STATE_CHANGED -> {
                     recorder.setSpeakerphoneInCall() //TODO: test with other audio source and make it feature in pref
                 }
             }

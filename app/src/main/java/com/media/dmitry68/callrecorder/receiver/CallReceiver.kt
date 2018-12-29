@@ -41,7 +41,7 @@ class CallReceiver : BroadcastReceiver(){
                 }
                 managerPref.getPrefModeOfWorkOnDemand() -> {
                     if (caller.statePhone == CallStates.OFFHOOK)
-                        context.sendBroadcast(Intent(ServiceOnDemandManager.SPEAKERPHONE_ON_RECORD_ACTION))
+                        context.sendBroadcast(Intent(ServiceOnDemandManager.ON_CALL_STATE_CHANGED))
                 }
             }
         }
