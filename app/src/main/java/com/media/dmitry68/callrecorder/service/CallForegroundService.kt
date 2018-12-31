@@ -35,13 +35,8 @@ class CallForegroundService : Service(){
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "Service: onDestroy")
-        when (state) {
-            ModeOfWork.Background ->
-                stopCallReceiver()
-            ModeOfWork.OnDemand -> {
-                stopListenerAndInnerReceiver()
-            }
-        }
+        stopCallReceiver()
+        stopListenerAndInnerReceiver()
         prefManager.setStateService(false)
     }
 

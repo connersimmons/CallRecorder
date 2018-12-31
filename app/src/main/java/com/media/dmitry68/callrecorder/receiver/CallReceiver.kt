@@ -15,12 +15,9 @@ import com.media.dmitry68.callrecorder.stateCall.TalkStates
 import java.util.*
 
 class CallReceiver : BroadcastReceiver(){
-    companion object {
-        private var lastState: Int = CallStates.IDLE
-        private val caller: Caller = Caller()
-    }
     private val TAG = "LOG"
     private val incomingNumber = TelephonyManager.EXTRA_INCOMING_NUMBER
+    private lateinit var receiverContext: Context
     private lateinit var recorder: Recorder
     private lateinit var managerPref: ManagerPref
 
@@ -30,18 +27,18 @@ class CallReceiver : BroadcastReceiver(){
             if (intent.hasExtra(incomingNumber)) {
                 caller.number = intent.getStringExtra(incomingNumber)
             }
-            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE)
+            receiverContext = context
+            val telephonyManager = receiverContext.getSystemService(Context.TELEPHONY_SERVICE)
             if (telephonyManager is TelephonyManager)
                 caller.statePhone = telephonyManager.callState
-            managerPref = ManagerPref(context)
-            when (managerPref.getModeOfWorkInSharedPref()){ //TODO: make simple init modeOfWork
+            Log.d(TAG, "On Receive ${caller.number} ${caller.statePhone} $lastState")
+            managerPref = ManagerPref(receiverContext)
+            when (managerPref.getModeOfWorkInSharedPref()){
                 managerPref.getPrefModeOfWorkDefault() -> {
-                    Log.d(TAG, "On Receive ${caller.number} ${caller.statePhone} $lastState")
-                    onCallStateChanged(caller.statePhone, context)
+                    onCallStateChanged(caller.statePhone, this::initRecord, this::stopRecord)
                 }
                 managerPref.getPrefModeOfWorkOnDemand() -> {
-                    if (caller.statePhone == CallStates.OFFHOOK)
-                        context.sendBroadcast(Intent(ServiceOnDemandManager.ON_CALL_STATE_CHANGED))
+                   onCallStateChanged(caller.statePhone, this::messageOnDemandManagerOnCallStateChanged)
                 }
             }
         }
@@ -50,7 +47,7 @@ class CallReceiver : BroadcastReceiver(){
     //INCOMING - IDLE -> RINGING -> OFFHOOK -> IDLE
     //OUTGOING - IDLE -> OFFHOOK -> IDLE
     //MISSING - IDLE -> RINGING -> IDLE
-    private fun onCallStateChanged(statePhone: Int, context: Context) {
+    private inline fun onCallStateChanged(statePhone: Int, onCallStateOffHook: () -> Unit, onCallStop: () -> Unit = {}) {
         if (lastState == statePhone)
             return //no change
         when(statePhone){
@@ -67,7 +64,7 @@ class CallReceiver : BroadcastReceiver(){
                                     talkState = TalkStates.STOP
                                     stopTalk = Date()
                                 }
-                                recorder.stopRecord()
+                                onCallStop()
                                 Log.d(TAG, "stop incoming call")
                             }
                             DirectionCallState.OUTGOING -> {
@@ -75,7 +72,7 @@ class CallReceiver : BroadcastReceiver(){
                                     talkState = TalkStates.STOP
                                     stopTalk = Date()
                                 }
-                                recorder.stopRecord()
+                                onCallStop()
                                 Log.d(TAG, "stop outgoing call")
                             }
                         }
@@ -90,8 +87,8 @@ class CallReceiver : BroadcastReceiver(){
                             talkState = TalkStates.ANSWER
                             startTalk = Date()
                         }
-                        initRecord(context)
-                        Log.d(TAG, "offhook incoming call ${caller.number}")
+                        onCallStateOffHook()
+                        Log.d(TAG, "offHook incoming call ${caller.number}")
                     }
                     CallStates.IDLE -> {
                         with(caller) {
@@ -99,8 +96,8 @@ class CallReceiver : BroadcastReceiver(){
                             talkState = TalkStates.START
                             startTalk = Date()
                         }
-                        initRecord(context)
-                        Log.d(TAG, "offhook outgoing call ${caller.number}")
+                        onCallStateOffHook()
+                        Log.d(TAG, "offHook outgoing call ${caller.number}")
                     }
                 }
             }
@@ -115,7 +112,25 @@ class CallReceiver : BroadcastReceiver(){
         lastState = statePhone
     }
 
-    private fun initRecord(context: Context) {
-        recorder = Recorder(caller, context).apply { startRecord() }
+    private fun initRecord() {
+        recorder = Recorder(caller, receiverContext).apply { startRecord() }
+    }
+
+    private fun stopRecord() = recorder.stopRecord()
+
+    private fun messageOnDemandManagerOnCallStateChanged(){
+        val intent = Intent(ServiceOnDemandManager.ON_CALL_STATE_CHANGED).apply {
+            putExtra(CALL_NUMBER, caller.number)
+            putExtra(DIRECT_CALL, caller.directCallState)
+        }
+        receiverContext.sendBroadcast(intent)
+    }
+
+    companion object {
+        private var lastState: Int = CallStates.IDLE
+        private val caller: Caller = Caller()
+
+        const val CALL_NUMBER = "CALL_NUMBER"
+        const val DIRECT_CALL = "DIRECT_CALL"
     }
 }
