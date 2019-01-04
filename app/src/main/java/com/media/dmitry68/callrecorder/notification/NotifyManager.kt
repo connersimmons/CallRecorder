@@ -52,6 +52,8 @@ class NotifyManager(private val context: Context) {
         updateNotification()
     }
 
+    fun removeNotification() = notificationManager.cancel(NOTIFICATION_ID)
+
     fun addText(text: String){
         notificationBuilder.setContentText(text)
         updateNotification()

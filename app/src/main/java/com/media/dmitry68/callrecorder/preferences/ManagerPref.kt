@@ -12,6 +12,7 @@ class ManagerPref(private val context : Context){
     private val receiverOnChangePref = ReceiverOnChangePref()
     private val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
     private val localBroadcastManager = LocalBroadcastManager.getInstance(context)
+    private val sharedPrefEditor = PreferenceManager.getDefaultSharedPreferences(context).edit()
     private val TAG = "LOG"
 
     fun getFileName() = sharedPref.getString(KEY_PREF_FILE_NAME, context.getString(R.string.pref_file_name))!!
@@ -25,9 +26,13 @@ class ManagerPref(private val context : Context){
     fun getStateService() = sharedPref.getBoolean(KEY_PREF_SERVICE_STATUS, false)
 
     fun setStateService(state: Boolean){
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context).edit()
-        sharedPref.putBoolean(KEY_PREF_SERVICE_STATUS, state)
-        sharedPref.apply()
+        sharedPrefEditor.putBoolean(KEY_PREF_SERVICE_STATUS, state)
+        sharedPrefEditor.apply()
+    }
+
+    fun setStateRecorder(state: Boolean){
+        sharedPrefEditor.putBoolean(KEY_PREF_RECORDER_STATUS, state)
+        sharedPrefEditor.apply()
     }
 
     fun getPrefModeOfWorkDefault(): String = context.getString(R.string.pref_mode_of_work_default)
@@ -63,6 +68,7 @@ class ManagerPref(private val context : Context){
         const val KEY_PREF_FLAG_SHOW_NUMBER = "pref_flag_show_number"
         const val KEY_PREF_AUDIO_SOURCE = "pref_audio_source"
         const val KEY_PREF_SERVICE_STATUS = "pref_service_status"
+        const val KEY_PREF_RECORDER_STATUS = "pref_recorder_status"
         const val KEY_PREF_MODE_OF_WORK = "pref_mode_of_work"
     }
 

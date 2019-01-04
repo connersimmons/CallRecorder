@@ -3,6 +3,7 @@ package com.media.dmitry68.callrecorder.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.support.v4.content.LocalBroadcastManager
 import android.telephony.TelephonyManager
 import android.util.Log
 import com.media.dmitry68.callrecorder.preferences.ManagerPref
@@ -59,7 +60,7 @@ class CallReceiver : BroadcastReceiver(){
                     }
                     CallStates.OFFHOOK -> {
                         when(caller.directCallState){
-                            DirectionCallState.INCOMING -> { //TODO: Collapse two cases
+                            DirectionCallState.INCOMING -> {
                                 with(caller){
                                     talkState = TalkStates.STOP
                                     stopTalk = Date()
@@ -113,17 +114,21 @@ class CallReceiver : BroadcastReceiver(){
     }
 
     private fun initRecord() {
-        recorder = Recorder(caller, receiverContext).apply { startRecord() }
+        recorder = Recorder(caller, receiverContext).apply { startRecord() }//TODO: add stopwatch and text in notification
+        managerPref.setStateRecorder(true)
     }
 
-    private fun stopRecord() = recorder.stopRecord()
+    private fun stopRecord(){
+        recorder.stopRecord()
+        managerPref.setStateRecorder(false)
+    }
 
     private fun messageOnDemandManagerOnCallStateChanged(){
         val intent = Intent(ServiceOnDemandManager.ON_CALL_STATE_CHANGED).apply {
             putExtra(CALL_NUMBER, caller.number)
             putExtra(DIRECT_CALL, caller.directCallState)
         }
-        receiverContext.sendBroadcast(intent)
+        LocalBroadcastManager.getInstance(receiverContext).sendBroadcast(intent)
     }
 
     companion object {

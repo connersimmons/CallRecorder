@@ -56,7 +56,7 @@ class ServiceManager(private val context: Context){
                 ModeOfWork.Background
             }
             managerPref.getPrefModeOfWorkOnDemand() -> {
-                ModeOfWork.OnDemand //TODO: make nameOfFile in settings; Mode Of Recorder in Notification; second mode ondemand: action start in  notification
+                ModeOfWork.OnDemand //TODO: Mode Of Recorder in Notification; second mode ondemand: action start in  notification; test service on xiaomi device
             }
             else -> {
                 ModeOfWork.Background

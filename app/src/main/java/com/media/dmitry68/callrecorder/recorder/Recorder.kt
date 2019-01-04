@@ -78,6 +78,7 @@ class Recorder(
     }
 
     fun addToAudioFileCallNumberAndDirection(){
+        Log.d(TAG, "Recorder: addToAudioFileCallNumberAndDirection")
         val newFileNameBuilder = buildFileName()
         val newAudioFile = File(audioDir, newFileNameBuilder)
         audioFile?.renameTo(newAudioFile)
