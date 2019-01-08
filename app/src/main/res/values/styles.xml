@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
@@ -11,4 +11,11 @@
         <item name="android:colorControlActivated">@color/pure_red</item>
     </style>
 
+    <style name="AppPreference" tools:ignore="PrivateResource">
+        <item name="android:layout">@layout/preference_material</item>
+    </style>
+    <style name="AppPreference.DialogPreference">
+        <item name="positiveButtonText">@android:string/ok</item>
+        <item name="negativeButtonText">@android:string/cancel</item>
+    </style>
 </resources>

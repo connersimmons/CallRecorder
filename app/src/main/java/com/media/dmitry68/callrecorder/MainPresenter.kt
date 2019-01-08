@@ -14,7 +14,6 @@ class MainPresenter(
     private val TAG = "LOG"
     private val model = MVPModel()
 
-
     override fun setUp() {
         val initialState = managerPref.getStateService()
         model.stateOfService = initialState

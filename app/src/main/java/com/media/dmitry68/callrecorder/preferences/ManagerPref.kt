@@ -25,6 +25,8 @@ class ManagerPref(private val context : Context){
 
     fun getStateService() = sharedPref.getBoolean(KEY_PREF_SERVICE_STATUS, false)
 
+    fun getModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, getPrefModeOfWorkDefault())!!
+
     fun setStateService(state: Boolean){
         sharedPrefEditor.putBoolean(KEY_PREF_SERVICE_STATUS, state)
         sharedPrefEditor.apply()
@@ -35,6 +37,7 @@ class ManagerPref(private val context : Context){
         sharedPrefEditor.apply()
     }
 
+    //TODO: make manager of resource for next fun
     fun getPrefModeOfWorkDefault(): String = context.getString(R.string.pref_mode_of_work_default)
 
     fun getPrefModeOfWorkOnDemand(): String = context.getString(R.string.pref_mode_of_work_on_demand)
@@ -46,8 +49,6 @@ class ManagerPref(private val context : Context){
     fun getPrefAudioSourceVoiceCall(): String = context.getString(R.string.pref_audio_source_voice_call)
 
     fun getPrefAudioSourceDefault(): String = context.getString(R.string.pref_audio_source_default)
-
-    fun getModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, getPrefModeOfWorkDefault())!!
 
     fun registerListenerOnSharedPref() {
         Log.d(TAG, "ManagerPref register on SharedPreferenceChangeReceiver")
@@ -70,6 +71,8 @@ class ManagerPref(private val context : Context){
         const val KEY_PREF_SERVICE_STATUS = "pref_service_status"
         const val KEY_PREF_RECORDER_STATUS = "pref_recorder_status"
         const val KEY_PREF_MODE_OF_WORK = "pref_mode_of_work"
+        const val KEY_PREF_CATEGORY_ON_DEMAND_MODE = "pref_category_on_demand_mode"
+        const val KEY_PREF_COUNT_OF_SHAKE = "pref_count_of_shake"
     }
 
     inner class ReceiverOnChangePref: BroadcastReceiver(){
