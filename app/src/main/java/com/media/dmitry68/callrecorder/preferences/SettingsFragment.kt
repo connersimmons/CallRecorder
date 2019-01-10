@@ -12,13 +12,14 @@ import com.media.dmitry68.callrecorder.R
 class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var managerPref: ManagerPref
     private lateinit var prefCategoryOnDemandMode: Preference
+    private lateinit var localBroadcastManager: LocalBroadcastManager
 
     override fun onCreatePreferences(p0: Bundle?, p1: String?) {
         setPreferencesFromResource(R.xml.preferences, p1)
         managerPref = ManagerPref(context!!)
-        prefCategoryOnDemandMode = findPreference(ManagerPref.KEY_PREF_CATEGORY_ON_DEMAND_MODE)
+        localBroadcastManager = LocalBroadcastManager.getInstance(context!!)
+        prefCategoryOnDemandMode = findPreference(ManagerPref.KEY_PREF_CATEGORY_ON_SHAKE_MODE)
         setSummary(ManagerPref.KEY_PREF_MODE_OF_WORK)
-        setSummaryInt(ManagerPref.KEY_PREF_COUNT_OF_SHAKE)
         setSummary(ManagerPref.KEY_PREF_FILE_NAME)
         setSummary(ManagerPref.KEY_PREF_AUDIO_SOURCE)
         manageOfVisiblePreferenceOnScreen(managerPref.getModeOfWorkInSharedPref(),
@@ -41,13 +42,13 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         if (preference is NumberPreference){
             val key = preference.key
             dialogFragment = NumberPreferenceFragmentCompat.newInstance(key)
+        } else if (preference is SeekBarPreference){
+            val key = preference.key
+            dialogFragment = SeekBarPreferenceFragmentCompat.newInstance(key)
         }
         if (dialogFragment != null) {
             dialogFragment.setTargetFragment(this, 0)
-            dialogFragment.show(
-                fragmentManager,
-                "android.support.v7.preference.PreferenceDialogFragmentCompat.DIALOG"
-            )
+            dialogFragment.show(fragmentManager, DIALOG_FRAGMENT_TAG)
         } else {
             super.onDisplayPreferenceDialog(preference)
         }
@@ -59,10 +60,14 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
                 setSummary(ManagerPref.KEY_PREF_MODE_OF_WORK)
                 manageOfVisiblePreferenceOnScreen(managerPref.getModeOfWorkInSharedPref(),
                     managerPref.getPrefModeOfWorkOnDemand(), prefCategoryOnDemandMode)
-                LocalBroadcastManager.getInstance(context!!).sendBroadcast(Intent(CHANGE_PREFERENCE_MODE_OF_WORK))
+                localBroadcastManager.sendBroadcast(Intent(CHANGE_PREFERENCE_MODE_OF_WORK))
             }
             ManagerPref.KEY_PREF_COUNT_OF_SHAKE -> {
                 setSummaryInt(ManagerPref.KEY_PREF_COUNT_OF_SHAKE)
+                localBroadcastManager.sendBroadcast(Intent(CHANGE_PREFERENCE_COUNT_OF_SHAKE))
+            }
+            ManagerPref.KEY_PREF_SENSITIVITY_SHAKE -> {
+                localBroadcastManager.sendBroadcast(Intent(CHANGE_PREFERENCE_SENSITIVITY))
             }
             ManagerPref.KEY_PREF_FILE_NAME -> {
                 setSummary(ManagerPref.KEY_PREF_FILE_NAME)
@@ -94,5 +99,9 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     companion object {
         const val PAUSE_PREFERENCE_FRAGMENT = "com.media.dmitry68.callrecorder.preferences.PAUSE_PREFERENCE_FRAGMENT"
         const val CHANGE_PREFERENCE_MODE_OF_WORK = "com.media.dmitry68.callrecorder.preferences.CHANGE_PREFERENCE_MODE_OF_WORK"
+        const val CHANGE_PREFERENCE_COUNT_OF_SHAKE = "com.media.dmitry68.callrecorder.preferences.CHANGE_PREFERENCE_COUNT_OF_SHAKE"
+        const val CHANGE_PREFERENCE_SENSITIVITY = "com.media.dmitry68.callrecorder.preferences.CHANGE_PREFERENCE_SENSITIVITY"
+
+        const val DIALOG_FRAGMENT_TAG = "android.support.v7.preference.PreferenceDialogFragmentCompat.DIALOG"
     }
 }

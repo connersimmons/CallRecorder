@@ -11,6 +11,8 @@ import com.media.dmitry68.callrecorder.service.ServiceOnDemandManager
 class ShakeDetector(private val serviceOnDemandManager: ServiceOnDemandManager) : SensorEventListener, ShakeListener {
     private var shakeTimeStamp = 0L
     private var shakeCount = 0
+    var countOfShakeForEvent = 3
+    var shakeThresholdGravity = 2.7F
     private val TAG = "LOG"
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -24,10 +26,10 @@ class ShakeDetector(private val serviceOnDemandManager: ServiceOnDemandManager) 
 
         val gForce = Math.sqrt((gX * gX + gY * gY + gZ * gZ).toDouble())
 
-        if (gForce > SHAKE_THRESHOLD_GRAVITY){
+        if (gForce > shakeThresholdGravity){
             Log.d(TAG, "Sensor detector $shakeCount changes")
             val now = System.currentTimeMillis()
-            if (shakeTimeStamp + SHAKE_SLOP_TIME_MS > now)
+            if (shakeTimeStamp + SHAKE_STOP_TIME_MS > now)
                 return
 
             if (shakeTimeStamp + SHAKE_COUNT_RESET_TIME_MS < now)
@@ -46,14 +48,13 @@ class ShakeDetector(private val serviceOnDemandManager: ServiceOnDemandManager) 
 
     override fun onShake(count: Int) {
         Log.d(TAG, "Detect $count shake")
-        if (count == 3) {//TODO:make count preference
+        if (count == countOfShakeForEvent) {
             serviceOnDemandManager.startRecordOnShakeDetector()
         }
     }
 
     companion object {
-        const val SHAKE_THRESHOLD_GRAVITY = 2.7F
-        const val SHAKE_SLOP_TIME_MS = 500
+        const val SHAKE_STOP_TIME_MS = 500
         const val SHAKE_COUNT_RESET_TIME_MS = 3000
     }
 

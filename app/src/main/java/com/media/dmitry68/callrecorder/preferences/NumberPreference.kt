@@ -10,7 +10,9 @@ class NumberPreference: DialogPreference {
     var number: Int = 0
         set(value) {
             field = value
-            persistInt(value)
+            if (shouldPersist()){
+                persistInt(value)
+            }
         }
     private val numberPrefLayoutResId = R.layout.preference_number_picker
 
@@ -25,9 +27,7 @@ class NumberPreference: DialogPreference {
         number = 3
     }
 
-    override fun onGetDefaultValue(a: TypedArray?, index: Int): Any {
-        return a?.getString(index) is Any
-    }
+    override fun onGetDefaultValue(a: TypedArray?, index: Int) = a?.getString(index) is Any
 
     override fun onSetInitialValue(defaultValue: Any?) {
         number = if (defaultValue == null)

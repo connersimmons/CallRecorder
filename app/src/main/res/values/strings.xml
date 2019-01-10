@@ -13,10 +13,10 @@
     <string name="message_permission_record_audio">to record audio</string>
     <string name="pref_category_recorder">Recorder</string>
     <string name="pref_audio_source">Audio source</string>
-    <string name="pref_audio_source_voice_communication">VOICE_COMMUNICATION</string>
-    <string name="pref_audio_source_mic">MIC</string>
-    <string name="pref_audio_source_voice_call">VOICE_CALL</string>
-    <string name="pref_audio_source_default">DEFAULT</string>
+    <string name="pref_audio_source_voice_communication" translatable="false">VOICE_COMMUNICATION</string>
+    <string name="pref_audio_source_mic" translatable="false">MIC</string>
+    <string name="pref_audio_source_voice_call" translatable="false">VOICE_CALL</string>
+    <string name="pref_audio_source_default" translatable="false">DEFAULT</string>
     <string name="channel_id">channel_id</string>
     <string name="notification_title">Call Recorder</string>
     <string name="notification_text">Recorder ready</string>
@@ -27,7 +27,9 @@
     <string name="pref_mode_of_work">Mode of work</string>
     <string name="notification_action_stop_recorder">Stop</string>
     <string name="pref_count_of_shake">Count of shake</string>
-    <string name="pref_category_on_demand_mode">OnDemand mode</string>
+    <string name="pref_sensitivity_shake">Sensitivity</string>
+    <string name="pref_category_on_shake_mode">Shake mode</string>
+    <string name="seekBar_pref_summary" translatable="false">%1$d %2$s</string>
     <string-array name="entries_of_audio_source">
         <item>VOICE_COMMUNICATION</item>
         <item>MIC</item>

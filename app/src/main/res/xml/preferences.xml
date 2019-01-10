@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                                                xmlns:sample="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
             android:title="@string/pref_category_general">
         <ListPreference
@@ -10,12 +11,22 @@
                 android:key="pref_mode_of_work"/>
     </PreferenceCategory>
     <PreferenceCategory
-            android:title="@string/pref_category_on_demand_mode"
-            android:key="pref_category_on_demand_mode">
+            android:title="@string/pref_category_on_shake_mode"
+            android:key="pref_category_on_shake_mode">
         <com.media.dmitry68.callrecorder.preferences.NumberPreference
-            android:title="@string/pref_count_of_shake"
-            android:key="pref_count_of_shake"
-            style="@style/AppPreference.DialogPreference"
+                android:title="@string/pref_count_of_shake"
+                android:key="pref_count_of_shake"
+                android:summary="3"
+                style="@style/AppPreference.DialogPreference"
+        />
+        <com.media.dmitry68.callrecorder.preferences.SeekBarPreference
+                android:title="@string/pref_sensitivity_shake"
+                android:key="pref_sensitivity_shake"
+                android:summary="70"
+                sample:maximumValue="100"
+                sample:minimumValue="1"
+                sample:stepSize="1"
+                sample:units="%"
         />
     </PreferenceCategory>
     <PreferenceCategory

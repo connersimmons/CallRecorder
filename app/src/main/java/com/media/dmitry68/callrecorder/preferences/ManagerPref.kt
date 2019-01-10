@@ -27,6 +27,10 @@ class ManagerPref(private val context : Context){
 
     fun getModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, getPrefModeOfWorkDefault())!!
 
+    fun getCountOfShake() = sharedPref.getInt(KEY_PREF_COUNT_OF_SHAKE, 3)
+
+    fun getSensitivityShake() = sharedPref.getInt(KEY_PREF_SENSITIVITY_SHAKE, 70)
+
     fun setStateService(state: Boolean){
         sharedPrefEditor.putBoolean(KEY_PREF_SERVICE_STATUS, state)
         sharedPrefEditor.apply()
@@ -71,8 +75,9 @@ class ManagerPref(private val context : Context){
         const val KEY_PREF_SERVICE_STATUS = "pref_service_status"
         const val KEY_PREF_RECORDER_STATUS = "pref_recorder_status"
         const val KEY_PREF_MODE_OF_WORK = "pref_mode_of_work"
-        const val KEY_PREF_CATEGORY_ON_DEMAND_MODE = "pref_category_on_demand_mode"
+        const val KEY_PREF_CATEGORY_ON_SHAKE_MODE = "pref_category_on_shake_mode"
         const val KEY_PREF_COUNT_OF_SHAKE = "pref_count_of_shake"
+        const val KEY_PREF_SENSITIVITY_SHAKE = "pref_sensitivity_shake"
     }
 
     inner class ReceiverOnChangePref: BroadcastReceiver(){

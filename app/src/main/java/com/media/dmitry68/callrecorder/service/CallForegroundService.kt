@@ -15,10 +15,11 @@ import com.media.dmitry68.callrecorder.preferences.ManagerPref
 import com.media.dmitry68.callrecorder.receiver.CallReceiver
 import com.media.dmitry68.callrecorder.receiver.IntentActions
 import com.media.dmitry68.callrecorder.shaker.ShakeDetector
+import com.media.dmitry68.callrecorder.shaker.ShakeManager
 
 class CallForegroundService : Service(){
     private var callReceiver: CallReceiver? = null
-    private val innerReceiver = ReceiverOfManageShakeDetector()
+    private val innerReceiver = ReceiverOfManageOnDemandMode()
     private val TAG = "LOG"
     private var sensorManager: SensorManager? = null
     private var isRegisterCallReceiver = false
@@ -27,6 +28,7 @@ class CallForegroundService : Service(){
     private lateinit var notifyManager: NotifyManager
     private lateinit var serviceOnDemandManager: ServiceOnDemandManager
     private lateinit var shakeDetector: ShakeDetector
+    private lateinit var shakeManager: ShakeManager
     private lateinit var prefManager: ManagerPref
     private lateinit var state: ModeOfWork
     private lateinit var localBroadcastManager: LocalBroadcastManager
@@ -113,6 +115,7 @@ class CallForegroundService : Service(){
         })
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         shakeDetector = ShakeDetector(serviceOnDemandManager)
+        shakeManager = ShakeManager(applicationContext, shakeDetector)
         isRegisterInnerReceiver = true
         registerShakeDetector()
     }
@@ -152,6 +155,7 @@ class CallForegroundService : Service(){
         if (isRegisterShakeDetector){
             Log.d(TAG, "Unregister shake detector")
             sensorManager?.unregisterListener(shakeDetector)
+            shakeManager.unRegisterInnerReceiver()
             isRegisterShakeDetector = false
         }
     }
@@ -172,7 +176,7 @@ class CallForegroundService : Service(){
         const val STOP_CALL_RECEIVER = "com.media.dmitry68.callrecorder.service.STOP_CALL_RECEIVER"
     }
 
-    inner class ReceiverOfManageShakeDetector : BroadcastReceiver(){
+    inner class ReceiverOfManageOnDemandMode : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
             when(intent?.action) {
                 START_CALL_RECEIVER -> {
