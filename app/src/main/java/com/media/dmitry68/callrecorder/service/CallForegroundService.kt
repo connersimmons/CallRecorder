@@ -123,6 +123,7 @@ class CallForegroundService : Service(){
     private fun registerShakeDetector(){
         Log.d(TAG, "Start register shake detector")
         val accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        shakeManager.registerInnerReceiver()
         sensorManager?.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
         isRegisterShakeDetector = true
     }
@@ -154,8 +155,8 @@ class CallForegroundService : Service(){
     private fun unRegisterShakeDetector(){
         if (isRegisterShakeDetector){
             Log.d(TAG, "Unregister shake detector")
-            sensorManager?.unregisterListener(shakeDetector)
             shakeManager.unRegisterInnerReceiver()
+            sensorManager?.unregisterListener(shakeDetector)
             isRegisterShakeDetector = false
         }
     }

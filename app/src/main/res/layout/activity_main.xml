@@ -15,6 +15,7 @@
             android:text="@string/state_service"
             android:padding="5dp"
             android:theme="@style/SwitchCompatTheme"
+            android:visibility="gone"
             app:switchPadding="10dp"
             app:showText="false"
             app:thumbTextPadding="5dp"

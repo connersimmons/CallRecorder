@@ -31,6 +31,8 @@ class ManagerPref(private val context : Context){
 
     fun getSensitivityShake() = sharedPref.getInt(KEY_PREF_SENSITIVITY_SHAKE, 70)
 
+    fun getModeVibrateOnShake() = sharedPref.getBoolean(KEY_PREF_VIBRATE_ON_SHAKE, false)
+
     fun setStateService(state: Boolean){
         sharedPrefEditor.putBoolean(KEY_PREF_SERVICE_STATUS, state)
         sharedPrefEditor.apply()
@@ -78,6 +80,7 @@ class ManagerPref(private val context : Context){
         const val KEY_PREF_CATEGORY_ON_SHAKE_MODE = "pref_category_on_shake_mode"
         const val KEY_PREF_COUNT_OF_SHAKE = "pref_count_of_shake"
         const val KEY_PREF_SENSITIVITY_SHAKE = "pref_sensitivity_shake"
+        const val KEY_PREF_VIBRATE_ON_SHAKE = "pref_vibrate_on_shake"
     }
 
     inner class ReceiverOnChangePref: BroadcastReceiver(){

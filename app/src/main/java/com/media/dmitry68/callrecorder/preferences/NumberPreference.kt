@@ -13,6 +13,7 @@ class NumberPreference: DialogPreference {
             if (shouldPersist()){
                 persistInt(value)
             }
+            summary = value.toString()
         }
     private val numberPrefLayoutResId = R.layout.preference_number_picker
 

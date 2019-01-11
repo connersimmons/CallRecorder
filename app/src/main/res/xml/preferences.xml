@@ -16,18 +16,20 @@
         <com.media.dmitry68.callrecorder.preferences.NumberPreference
                 android:title="@string/pref_count_of_shake"
                 android:key="pref_count_of_shake"
-                android:summary="3"
                 style="@style/AppPreference.DialogPreference"
         />
         <com.media.dmitry68.callrecorder.preferences.SeekBarPreference
                 android:title="@string/pref_sensitivity_shake"
                 android:key="pref_sensitivity_shake"
-                android:summary="70"
                 sample:maximumValue="100"
                 sample:minimumValue="1"
                 sample:stepSize="1"
                 sample:units="%"
         />
+        <CheckBoxPreference
+                android:defaultValue="true"
+                android:title="@string/pref_vibrate_on_shake"
+                android:key="pref_vibrate_on_shake"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_category_name_file">

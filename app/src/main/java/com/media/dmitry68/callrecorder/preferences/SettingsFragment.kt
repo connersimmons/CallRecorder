@@ -69,6 +69,9 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             ManagerPref.KEY_PREF_SENSITIVITY_SHAKE -> {
                 localBroadcastManager.sendBroadcast(Intent(CHANGE_PREFERENCE_SENSITIVITY))
             }
+            ManagerPref.KEY_PREF_VIBRATE_ON_SHAKE -> {
+                localBroadcastManager.sendBroadcast(Intent(CHANGE_PREFERENCE_VIBRATE_ON_SHAKE))
+            }
             ManagerPref.KEY_PREF_FILE_NAME -> {
                 setSummary(ManagerPref.KEY_PREF_FILE_NAME)
             }
@@ -101,6 +104,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         const val CHANGE_PREFERENCE_MODE_OF_WORK = "com.media.dmitry68.callrecorder.preferences.CHANGE_PREFERENCE_MODE_OF_WORK"
         const val CHANGE_PREFERENCE_COUNT_OF_SHAKE = "com.media.dmitry68.callrecorder.preferences.CHANGE_PREFERENCE_COUNT_OF_SHAKE"
         const val CHANGE_PREFERENCE_SENSITIVITY = "com.media.dmitry68.callrecorder.preferences.CHANGE_PREFERENCE_SENSITIVITY"
+        const val CHANGE_PREFERENCE_VIBRATE_ON_SHAKE = "com.media.dmitry68.callrecorder.preferences.CHANGE_PREFERENCE_VIBRATE_ON_SHAKE"
 
         const val DIALOG_FRAGMENT_TAG = "android.support.v7.preference.PreferenceDialogFragmentCompat.DIALOG"
     }

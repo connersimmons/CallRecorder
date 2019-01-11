@@ -16,6 +16,7 @@ import com.media.dmitry68.callrecorder.vibrator.VibrateManager
 
 class ServiceOnDemandManager(private val appContext: Context,
                              private val notificationManager: NotifyManager) {
+    val vibrateManager = VibrateManager(appContext)
     private val innerReceiverForStopRecorder = ReceiverOfManageRecorder()
     private val localBroadcastManager = LocalBroadcastManager.getInstance(appContext)
     private val prefManager = ManagerPref(appContext)
@@ -23,13 +24,11 @@ class ServiceOnDemandManager(private val appContext: Context,
     private var flagCall = false
     private lateinit var recorder: Recorder
     private lateinit var stopwatchManager: StopwatchManager
-    private lateinit var vibrateManager: VibrateManager
     private val TAG = "LOG"
 
     fun startRecordOnShakeDetector(){
         Log.d(TAG, "Start record on Shake Detector")
-        vibrateManager = VibrateManager(appContext)
-        vibrateManager.vibrate()
+        vibrateManager.vibrate(1000L)
         initRecord()
         appContext.registerReceiver(innerReceiverForStopRecorder, IntentFilter(STOP_RECORD_ACTION_ON_SHAKE_DETECTOR))
         localBroadcastManager.registerReceiver(innerReceiverForStopRecorder, IntentFilter(ON_CALL_STATE_CHANGED).apply {

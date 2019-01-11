@@ -9,8 +9,10 @@ import com.media.dmitry68.callrecorder.service.ServiceOnDemandManager
 
 
 class ShakeDetector(private val serviceOnDemandManager: ServiceOnDemandManager) : SensorEventListener, ShakeListener {
+    private val vibrateManager = serviceOnDemandManager.vibrateManager
     private var shakeTimeStamp = 0L
     private var shakeCount = 0
+    var flagVibrate = false
     var countOfShakeForEvent = 3
     var shakeThresholdGravity = 2.7F
     private val TAG = "LOG"
@@ -48,6 +50,8 @@ class ShakeDetector(private val serviceOnDemandManager: ServiceOnDemandManager) 
 
     override fun onShake(count: Int) {
         Log.d(TAG, "Detect $count shake")
+        if (flagVibrate)
+            vibrateManager.vibrate(VIBRATE_TIME_MS_ON_EVERY_SHAKE)
         if (count == countOfShakeForEvent) {
             serviceOnDemandManager.startRecordOnShakeDetector()
         }
@@ -56,6 +60,7 @@ class ShakeDetector(private val serviceOnDemandManager: ServiceOnDemandManager) 
     companion object {
         const val SHAKE_STOP_TIME_MS = 500
         const val SHAKE_COUNT_RESET_TIME_MS = 3000
+        const val VIBRATE_TIME_MS_ON_EVERY_SHAKE = 500L
     }
 
 

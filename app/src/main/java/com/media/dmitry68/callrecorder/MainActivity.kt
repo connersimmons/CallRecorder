@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity(), MVPView{
     }
 
     override fun showSwitchVisibility(b: Boolean) {
-        switchService.visibility = if (b) View.VISIBLE else View.GONE
+        switchService.visibility = if (b) View.VISIBLE else View.GONE//TODO: make text when visibility gone
         Log.d(TAG, "View: switch Visibility to $b")
     }
 

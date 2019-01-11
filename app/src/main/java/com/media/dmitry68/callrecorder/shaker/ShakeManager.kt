@@ -9,6 +9,7 @@ import android.util.Log
 import com.media.dmitry68.callrecorder.preferences.ManagerPref
 import com.media.dmitry68.callrecorder.preferences.SettingsFragment.Companion.CHANGE_PREFERENCE_COUNT_OF_SHAKE
 import com.media.dmitry68.callrecorder.preferences.SettingsFragment.Companion.CHANGE_PREFERENCE_SENSITIVITY
+import com.media.dmitry68.callrecorder.preferences.SettingsFragment.Companion.CHANGE_PREFERENCE_VIBRATE_ON_SHAKE
 
 class ShakeManager(context: Context,
                    private val shakeDetector: ShakeDetector) {
@@ -18,16 +19,23 @@ class ShakeManager(context: Context,
     private val innerReceiver = ReceiverOfManageShakeDetectorPref()
     private val TAG = "LOG"
 
-    init {
+
+    fun registerInnerReceiver(){
+        Log.d(TAG, "ShakeManager: register inner receiver")
         val intentFilterForChangeShakePref = IntentFilter(CHANGE_PREFERENCE_COUNT_OF_SHAKE).apply {
             addAction(CHANGE_PREFERENCE_SENSITIVITY)
+            addAction(CHANGE_PREFERENCE_VIBRATE_ON_SHAKE)
         }
         localBroadcastManager.registerReceiver(innerReceiver, intentFilterForChangeShakePref)
         changeCountOfShake(managerPref.getCountOfShake())
         changeSensitivity(managerPref.getSensitivityShake())
+        changeModeVibrateOnShake(managerPref.getModeVibrateOnShake())
     }
 
-    fun unRegisterInnerReceiver() = localBroadcastManager.unregisterReceiver(innerReceiver)
+    fun unRegisterInnerReceiver(){
+        Log.d(TAG, "ShakeManager: unregister inner receiver")
+        localBroadcastManager.unregisterReceiver(innerReceiver)
+    }
 
     private fun changeCountOfShake(newCountOfShake: Int){
         shakeDetector.countOfShakeForEvent = newCountOfShake
@@ -35,9 +43,13 @@ class ShakeManager(context: Context,
 
     private fun changeSensitivity(newSensitivity: Int){
         val percentSensitivity = 1 - (newSensitivity.toFloat() / 100)
-        val thresholdGravity = 2 + (2 * percentSensitivity)
+        val thresholdGravity = 2 + (2.5F * percentSensitivity)
         Log.d(TAG, "ShakeManager: new ThresholdGravity: $thresholdGravity")
         shakeDetector.shakeThresholdGravity = thresholdGravity
+    }
+
+    private fun changeModeVibrateOnShake(newMode: Boolean){
+        shakeDetector.flagVibrate = newMode
     }
 
     inner class ReceiverOfManageShakeDetectorPref : BroadcastReceiver(){
@@ -50,6 +62,10 @@ class ShakeManager(context: Context,
                 CHANGE_PREFERENCE_SENSITIVITY -> {
                     Log.d(TAG, "ShakeManager: CHANGE_PREFERENCE_SENSITIVITY")
                     changeSensitivity(managerPref.getSensitivityShake())
+                }
+                CHANGE_PREFERENCE_VIBRATE_ON_SHAKE -> {
+                    Log.d(TAG, "ShakeManager: CHANGE_PREFERENCE_VIBRATE_ON_SHAKE")
+                    changeModeVibrateOnShake(managerPref.getModeVibrateOnShake())
                 }
             }
         }
