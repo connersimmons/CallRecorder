@@ -8,6 +8,7 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import com.media.dmitry68.callrecorder.preferences.ManagerPref
 import com.media.dmitry68.callrecorder.recorder.Recorder
+import com.media.dmitry68.callrecorder.service.ModeOfWork
 import com.media.dmitry68.callrecorder.service.ServiceOnDemandManager
 import com.media.dmitry68.callrecorder.stateCall.CallStates
 import com.media.dmitry68.callrecorder.stateCall.Caller
@@ -35,10 +36,10 @@ class CallReceiver : BroadcastReceiver(){
             Log.d(TAG, "On Receive ${caller.number} ${caller.statePhone} $lastState")
             managerPref = ManagerPref(receiverContext)
             when (managerPref.getModeOfWorkInSharedPref()){
-                managerPref.getPrefModeOfWorkDefault() -> {
+                ModeOfWork.Background -> {
                     onCallStateChanged(caller.statePhone, this::initRecord, this::stopRecord)
                 }
-                managerPref.getPrefModeOfWorkOnDemand() -> {
+                ModeOfWork.OnDemandShake -> {
                    onCallStateChanged(caller.statePhone, this::messageOnDemandManagerOnCallStateChanged)
                 }
             }

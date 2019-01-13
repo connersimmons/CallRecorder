@@ -6,6 +6,7 @@ import android.support.v7.preference.PreferenceManager
 import android.util.Log
 import com.media.dmitry68.callrecorder.MainPresenter
 import com.media.dmitry68.callrecorder.R
+import com.media.dmitry68.callrecorder.service.ModeOfWork
 
 class ManagerPref(private val context : Context){
     var presenter: MainPresenter? = null
@@ -23,9 +24,24 @@ class ManagerPref(private val context : Context){
 
     fun getAudioSource() = sharedPref.getString(KEY_PREF_AUDIO_SOURCE, getPrefAudioSourceVoiceCommunication())!!
 
-    fun getStateService() = sharedPref.getBoolean(KEY_PREF_SERVICE_STATUS, false)
+    fun getModeOfWorkInSharedPref() : ModeOfWork {
+        return when (getStringModeOfWorkInSharedPref()){
+            getPrefModeOfWorkDefault() -> {
+                ModeOfWork.Background
+            }
+            getPrefModeOfWorkOnDemandShake() -> {
+                ModeOfWork.OnDemandShake
+            }
+            getPrefModeOfWorkOnDemandButton() -> {
+                ModeOfWork.OnDemandButton
+            }
+            else -> {
+                ModeOfWork.Background
+            }
+        }
+    }
 
-    fun getModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, getPrefModeOfWorkDefault())!!
+    fun getStringModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, getPrefModeOfWorkDefault())!!
 
     fun getCountOfShake() = sharedPref.getInt(KEY_PREF_COUNT_OF_SHAKE, 3)
 
@@ -38,23 +54,29 @@ class ManagerPref(private val context : Context){
         sharedPrefEditor.apply()
     }
 
+    fun getStateService() = sharedPref.getBoolean(KEY_PREF_SERVICE_STATUS, false)
+
     fun setStateRecorder(state: Boolean){
         sharedPrefEditor.putBoolean(KEY_PREF_RECORDER_STATUS, state)
         sharedPrefEditor.apply()
     }
 
+    fun getStateRecorder() = sharedPref.getBoolean(KEY_PREF_RECORDER_STATUS, false)
+
     //TODO: make manager of resource for next fun
-    fun getPrefModeOfWorkDefault(): String = context.getString(R.string.pref_mode_of_work_default)
+    private fun getPrefModeOfWorkDefault() : String = context.getString(R.string.pref_mode_of_work_default)
 
-    fun getPrefModeOfWorkOnDemand(): String = context.getString(R.string.pref_mode_of_work_on_demand)
+    private fun getPrefModeOfWorkOnDemandButton(): String = context.getString(R.string.pref_mode_of_work_on_button)
 
-    fun getPrefAudioSourceVoiceCommunication(): String = context.getString(R.string.pref_audio_source_voice_communication)
+    fun getPrefModeOfWorkOnDemandShake() : String = context.getString(R.string.pref_mode_of_work_on_shake)
 
-    fun getPrefAudioSourceMic(): String = context.getString(R.string.pref_audio_source_mic)
+    fun getPrefAudioSourceVoiceCommunication() : String = context.getString(R.string.pref_audio_source_voice_communication)
 
-    fun getPrefAudioSourceVoiceCall(): String = context.getString(R.string.pref_audio_source_voice_call)
+    fun getPrefAudioSourceMic() : String = context.getString(R.string.pref_audio_source_mic)
 
-    fun getPrefAudioSourceDefault(): String = context.getString(R.string.pref_audio_source_default)
+    fun getPrefAudioSourceVoiceCall() : String = context.getString(R.string.pref_audio_source_voice_call)
+
+    fun getPrefAudioSourceDefault() : String = context.getString(R.string.pref_audio_source_default)
 
     fun registerListenerOnSharedPref() {
         Log.d(TAG, "ManagerPref register on SharedPreferenceChangeReceiver")

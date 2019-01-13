@@ -57,7 +57,7 @@ class CallForegroundService : Service(){
         Log.d(TAG, "Service onCreate")
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {//TODO: think about make pref stash notification; make notify on record stop
         super.onStartCommand(intent, flags, startId)
         when (intent?.action) {
             START_FOREGROUND_AUTO_CALL_RECORD_ACTION -> {
@@ -71,23 +71,37 @@ class CallForegroundService : Service(){
                 state = ModeOfWork.Background
                 stopForegroundService()
             }
-            START_FOREGROUND_ON_DEMAND_RECORD_ACTION -> {
+
+            START_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION -> {
                 Log.d(TAG, "onStartCommand: START_FOREGROUND_ON_DEMAND_RECORD_ACTION")
-                state = ModeOfWork.OnDemand
+                state = ModeOfWork.OnDemandShake
                 startNotification()
-                initOnDemandManagers()
-                startShakeDetector()
+                initOnDemandManager()
+                initShakeMode()
             }
-            STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION -> {
+            STOP_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION -> {
                 Log.d(TAG, "onStartCommand: STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION")
-                state = ModeOfWork.OnDemand
+                state = ModeOfWork.OnDemandShake
+                stopForegroundService()
+            }
+
+            START_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION -> {
+                Log.d(TAG, "onStartCommand: START_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION")
+                state = ModeOfWork.OnDemandButton
+                startNotification()
+                initOnDemandManager()
+                initButtonMode()
+            }
+            STOP_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION -> {
+                Log.d(TAG, "onStartCommand: STOP_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION")
+                state = ModeOfWork.OnDemandButton
                 stopForegroundService()
             }
         }
         return START_REDELIVER_INTENT
     }
 
-    private fun initOnDemandManagers(){
+    private fun initOnDemandManager(){
         serviceOnDemandManager = ServiceOnDemandManager(applicationContext, notifyManager)
     }
 
@@ -106,7 +120,7 @@ class CallForegroundService : Service(){
         Log.d(TAG, "Service register Call receiver")
     }
 
-    private fun startShakeDetector() {
+    private fun initShakeMode() {
         localBroadcastManager.registerReceiver(innerReceiver, IntentFilter(START_REGISTER_SHAKE_DETECTOR)
             .apply {
                 addAction(STOP_REGISTER_SHAKE_DETECTOR)
@@ -126,6 +140,10 @@ class CallForegroundService : Service(){
         shakeManager.registerInnerReceiver()
         sensorManager?.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
         isRegisterShakeDetector = true
+    }
+
+    private fun initButtonMode(){
+        serviceOnDemandManager.initButtonMode()
     }
 
     private fun stopListenerAndInnerReceiver(){
@@ -167,8 +185,15 @@ class CallForegroundService : Service(){
         const val START_FOREGROUND_AUTO_CALL_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.START_FOREGROUND_AUTO_CALL_RECORD"
         const val STOP_FOREGROUND_AUTO_CALL_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.STOP_FOREGROUND_AUTO_CALL_RECORD"
 
-        const val START_FOREGROUND_ON_DEMAND_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.START_FOREGROUND_ON_DEMAND_RECORD_ACTION"
-        const val STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION"
+        const val START_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION =
+            "com.media.dmitry68.callrecorder.service.START_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION"
+        const val STOP_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION =
+            "com.media.dmitry68.callrecorder.service.STOP_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION"
+
+        const val START_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION =
+            "com.media.dmitry68.callrecorder.service.START_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION"
+        const val STOP_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION =
+            "com.media.dmitry68.callrecorder.service.STOP_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION"
 
         const val START_REGISTER_SHAKE_DETECTOR = "com.media.dmitry68.callrecorder.service.START_REGISTER_SHAKE_DETECTOR"
         const val STOP_REGISTER_SHAKE_DETECTOR = "com.media.dmitry68.callrecorder.service.STOP_REGISTER_SHAKE_DETECTOR"

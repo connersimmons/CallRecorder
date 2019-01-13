@@ -8,13 +8,11 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import com.media.dmitry68.callrecorder.MVPPresenter
-import com.media.dmitry68.callrecorder.preferences.ManagerPref
 
 class ServiceManager(private val context: Context){
 
-    private val managerPref = ManagerPref(context)
     var presenter: MVPPresenter? = null
-    private lateinit var modeOfWork: ModeOfWork
+    lateinit var modeOfWork: ModeOfWork
     private val innerReceiverOnRestartService = ReceiverOnRestartService()
     private val TAG = "LOG"
 
@@ -25,9 +23,13 @@ class ServiceManager(private val context: Context){
                 Log.d(TAG, "Service manager: START_FOREGROUND_AUTO_CALL_RECORD_ACTION")
                 manageForegroundCallService(CallForegroundService.START_FOREGROUND_AUTO_CALL_RECORD_ACTION)
             }
-            is ModeOfWork.OnDemand -> {
-                Log.d(TAG, "Service manager: START_FOREGROUND_ON_DEMAND_RECORD_ACTION")
-                manageForegroundCallService(CallForegroundService.START_FOREGROUND_ON_DEMAND_RECORD_ACTION)
+            is ModeOfWork.OnDemandShake -> {
+                Log.d(TAG, "Service manager: START_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION")
+                manageForegroundCallService(CallForegroundService.START_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION)
+            }
+            is ModeOfWork.OnDemandButton -> {
+                Log.d(TAG, "Service manager: START_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION")
+                manageForegroundCallService(CallForegroundService.START_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION)
             }
         }
     }
@@ -38,9 +40,13 @@ class ServiceManager(private val context: Context){
                 Log.d(TAG, "Service manager: STOP_FOREGROUND_AUTO_CALL_RECORD_ACTION")
                 manageForegroundCallService(CallForegroundService.STOP_FOREGROUND_AUTO_CALL_RECORD_ACTION)
             }
-            is ModeOfWork.OnDemand -> {
-                Log.d(TAG, "Service manager: STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION")
-                manageForegroundCallService(CallForegroundService.STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION)
+            is ModeOfWork.OnDemandShake -> {
+                Log.d(TAG, "Service manager: STOP_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION")
+                manageForegroundCallService(CallForegroundService.STOP_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION)
+            }
+            is ModeOfWork.OnDemandButton -> {
+                Log.d(TAG, "Service manager: STOP_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION")
+                manageForegroundCallService(CallForegroundService.STOP_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION)
             }
         }
     }
@@ -50,19 +56,7 @@ class ServiceManager(private val context: Context){
         LocalBroadcastManager.getInstance(context).registerReceiver(innerReceiverOnRestartService, intentFilterOnStopCallService)
     }
 
-    fun setModeOfWork(stringModeOfWork: String){
-        modeOfWork = when(stringModeOfWork) {
-            managerPref.getPrefModeOfWorkDefault() -> {
-                ModeOfWork.Background
-            }
-            managerPref.getPrefModeOfWorkOnDemand() -> {
-                ModeOfWork.OnDemand //TODO: Mode Of Recorder in Notification; second mode ondemand: action start in  notification; test service on xiaomi device
-            }
-            else -> {
-                ModeOfWork.Background
-            }
-        }
-    }
+    //TODO: Mode Of Recorder in Notification; test service on xiaomi device
 
     private fun manageForegroundCallService(actionStopOrStart: String){
         val intent = Intent().apply {

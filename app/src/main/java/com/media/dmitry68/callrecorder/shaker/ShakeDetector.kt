@@ -53,7 +53,8 @@ class ShakeDetector(private val serviceOnDemandManager: ServiceOnDemandManager) 
         if (flagVibrate)
             vibrateManager.vibrate(VIBRATE_TIME_MS_ON_EVERY_SHAKE)
         if (count == countOfShakeForEvent) {
-            serviceOnDemandManager.startRecordOnShakeDetector()
+            flagVibrate = false
+            serviceOnDemandManager.startRecordOnShakeMode()
         }
     }
 

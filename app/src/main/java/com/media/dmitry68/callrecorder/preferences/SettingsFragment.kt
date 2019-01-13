@@ -22,8 +22,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         setSummary(ManagerPref.KEY_PREF_MODE_OF_WORK)
         setSummary(ManagerPref.KEY_PREF_FILE_NAME)
         setSummary(ManagerPref.KEY_PREF_AUDIO_SOURCE)
-        manageOfVisiblePreferenceOnScreen(managerPref.getModeOfWorkInSharedPref(),
-            managerPref.getPrefModeOfWorkOnDemand(), prefCategoryOnDemandMode)
+        manageOfVisiblePreferenceOnScreen(managerPref.getStringModeOfWorkInSharedPref(),
+            managerPref.getPrefModeOfWorkOnDemandShake(), prefCategoryOnDemandMode)
     }
 
     override fun onResume() {
@@ -58,8 +58,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         when (key){
             ManagerPref.KEY_PREF_MODE_OF_WORK -> {
                 setSummary(ManagerPref.KEY_PREF_MODE_OF_WORK)
-                manageOfVisiblePreferenceOnScreen(managerPref.getModeOfWorkInSharedPref(),
-                    managerPref.getPrefModeOfWorkOnDemand(), prefCategoryOnDemandMode)
+                manageOfVisiblePreferenceOnScreen(managerPref.getStringModeOfWorkInSharedPref(),
+                    managerPref.getPrefModeOfWorkOnDemandShake(), prefCategoryOnDemandMode)
                 localBroadcastManager.sendBroadcast(Intent(CHANGE_PREFERENCE_MODE_OF_WORK))
             }
             ManagerPref.KEY_PREF_COUNT_OF_SHAKE -> {

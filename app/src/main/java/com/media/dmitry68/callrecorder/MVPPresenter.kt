@@ -1,5 +1,7 @@
 package com.media.dmitry68.callrecorder
 
+import com.media.dmitry68.callrecorder.service.ModeOfWork
+
 interface MVPPresenter {
 
     fun setUp()
@@ -10,7 +12,7 @@ interface MVPPresenter {
 
     fun onCheckPermission(checkPermission: Boolean)
 
-    fun onChangeModeOfWork(newModeOfWork: String)
+    fun onChangeModeOfWork(newModeOfWork: ModeOfWork)
 
     fun onStopServiceForHisRestart()
 

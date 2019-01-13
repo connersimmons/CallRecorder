@@ -3,6 +3,7 @@ package com.media.dmitry68.callrecorder
 import android.util.Log
 import com.media.dmitry68.callrecorder.permissions.PermissionManager
 import com.media.dmitry68.callrecorder.preferences.ManagerPref
+import com.media.dmitry68.callrecorder.service.ModeOfWork
 import com.media.dmitry68.callrecorder.service.ServiceManager
 
 class MainPresenter(
@@ -53,13 +54,13 @@ class MainPresenter(
         }
     }
 
-    override fun onChangeModeOfWork(newModeOfWork: String) {
+    override fun onChangeModeOfWork(newModeOfWork: ModeOfWork) {
         Log.d(TAG, "presenter: onChangeModeOfWork stateOfService ${model.stateOfService} newModeOfWork $newModeOfWork")
         if (model.stateOfService){
             serviceManager.registerReceiverForRestartService()
             setSwitchCompatState(false)
         }
-        serviceManager.setModeOfWork(newModeOfWork)
+        serviceManager.modeOfWork = newModeOfWork
     }
 
     override fun onStopServiceForHisRestart(){
@@ -72,9 +73,7 @@ class MainPresenter(
 
     private fun initialSetModeOfWork(){
         val initialModeOfWork = managerPref.getModeOfWorkInSharedPref()
-        serviceManager.setModeOfWork(initialModeOfWork)
+        serviceManager.modeOfWork = initialModeOfWork
         Log.d(TAG, "presenter: Setup in initialState: ${model.stateOfService} in mode of work: $initialModeOfWork")
     }
-
-
 }

@@ -19,13 +19,16 @@
     <string name="pref_audio_source_default" translatable="false">DEFAULT</string>
     <string name="channel_id">channel_id</string>
     <string name="notification_title">Call Recorder</string>
-    <string name="notification_text">Recorder ready</string>
+    <string name="notification_text_mode_of_work">Mode of work</string>
+    <string name="notification_text_recorder_status">Recorder ready</string>
+    <string name="notification_action_start_recorder">Start</string>
+    <string name="notification_action_stop_recorder">Stop</string>
     <string name="state_service">Recorder</string>
     <string name="pref_category_general">General</string>
     <string name="pref_mode_of_work_default">Background</string>
-    <string name="pref_mode_of_work_on_demand">On demand</string>
+    <string name="pref_mode_of_work_on_shake">On shake</string>
+    <string name="pref_mode_of_work_on_button">On button</string>
     <string name="pref_mode_of_work">Mode of work</string>
-    <string name="notification_action_stop_recorder">Stop</string>
     <string name="pref_count_of_shake">Count of shake</string>
     <string name="pref_sensitivity_shake">Sensitivity</string>
     <string name="pref_vibrate_on_shake">Vibration</string>
@@ -39,6 +42,7 @@
     </string-array>
     <string-array name="modes_of_work">
         <item>Background</item>
-        <item>On demand</item>
+        <item>On shake</item>
+        <item>On button</item>
     </string-array>
 </resources>
