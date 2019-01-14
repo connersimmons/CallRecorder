@@ -22,7 +22,7 @@ class ServiceOnDemandManager(private val appContext: Context,
     private val localBroadcastManager = LocalBroadcastManager.getInstance(appContext)
     private val prefManager = ManagerPref(appContext)
     private val modeOfWork = prefManager.getModeOfWorkInSharedPref()
-    private val caller = Caller()
+    private var caller = Caller()
     private var flagCall = false
     private lateinit var recorder: Recorder
     private lateinit var stopwatchManager: StopwatchManager
@@ -55,6 +55,7 @@ class ServiceOnDemandManager(private val appContext: Context,
 
     private fun startRecordOnDemand(){
         Log.d(TAG, "ServiceOnDemandManager: Start record on demand")
+        caller = Caller()
         initRecord()
         stopwatchManager = StopwatchManager(notificationManager)
         stopwatchManager.start()
@@ -63,7 +64,7 @@ class ServiceOnDemandManager(private val appContext: Context,
         localBroadcastManager.registerReceiver(innerReceiverForManageRecorder, IntentFilter(ON_CALL_STATE_CHANGED).apply {
             addAction(CallForegroundService.STOP_FOREGROUND_SERVICE)
         })
-        localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_CALL_RECEIVER))//TODO: make speakerphone pref
+        localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_CALL_RECEIVER))
     }
 
     private fun initRecord() {
@@ -137,7 +138,9 @@ class ServiceOnDemandManager(private val appContext: Context,
                     flagCall = true
                     caller.number = intent.getStringExtra(CallReceiver.CALL_NUMBER)
                     caller.directCallState = intent.getStringExtra(CallReceiver.DIRECT_CALL)
-                    recorder.setSpeakerphoneInCall()
+                    if (prefManager.getFlagSpeakerphone()) {//TODO: test this 
+                        recorder.setSpeakerphoneInCall()
+                    }
                 }
             }
         }

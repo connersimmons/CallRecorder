@@ -65,6 +65,7 @@ class CallForegroundService : Service(){
                 state = ModeOfWork.Background
                 startCallReceiver()
                 startNotification()
+                prefManager.setStateService(true)
             }
             STOP_FOREGROUND_AUTO_CALL_RECORD_ACTION -> {
                 Log.d(TAG, "onStartCommand: STOP_FOREGROUND_AUTO_CALL_RECORD_ACTION")
@@ -78,6 +79,7 @@ class CallForegroundService : Service(){
                 startNotification()
                 initOnDemandManager()
                 initShakeMode()
+                prefManager.setStateService(true)
             }
             STOP_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION -> {
                 Log.d(TAG, "onStartCommand: STOP_FOREGROUND_ON_DEMAND_RECORD_ACTION")
@@ -91,6 +93,7 @@ class CallForegroundService : Service(){
                 startNotification()
                 initOnDemandManager()
                 initButtonMode()
+                prefManager.setStateService(true)
             }
             STOP_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION -> {
                 Log.d(TAG, "onStartCommand: STOP_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION")
@@ -143,6 +146,10 @@ class CallForegroundService : Service(){
     }
 
     private fun initButtonMode(){
+        localBroadcastManager.registerReceiver(innerReceiver, IntentFilter(START_CALL_RECEIVER)
+            .apply {
+                addAction(STOP_CALL_RECEIVER)
+            })
         serviceOnDemandManager.initButtonMode()
     }
 
@@ -167,7 +174,7 @@ class CallForegroundService : Service(){
             unregisterReceiver(callReceiver)
             isRegisterCallReceiver = false
         }
-        Log.d(TAG, "Service unregister receiver")
+        Log.d(TAG, "Service unregister call receiver")
     }
 
     private fun unRegisterShakeDetector(){

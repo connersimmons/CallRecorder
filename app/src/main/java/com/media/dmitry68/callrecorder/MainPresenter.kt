@@ -49,7 +49,7 @@ class MainPresenter(
             } else {
                 serviceManager.stopCallService()
             }
-            managerPref.setStateService(modeService)
+            managerPref.setStateService(modeService)//TODO: test this state in pref
             model.stateOfService = modeService
         }
     }

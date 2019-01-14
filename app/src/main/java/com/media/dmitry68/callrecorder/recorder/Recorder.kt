@@ -48,7 +48,7 @@ class Recorder(
                 recorder?.start()
             } catch (e: Exception){
                 e.printStackTrace()
-                audioFile?.delete()
+                audioFile?.delete() //TODO: add notification failed
                 return
             }
             flagStarted = true
@@ -118,8 +118,9 @@ class Recorder(
             recorder = MediaRecorder()
             val stringAudioSource = managerPref.getAudioSource()
             val audioSource = resolveAudioSource(stringAudioSource)
-            if (audioSource == MediaRecorder.AudioSource.MIC)
+            if (managerPref.getFlagSpeakerphone())
                 setSpeakerphoneInCall()
+            Log.d(TAG, "Recorder: prepare Recorder $stringAudioSource, speakerphone: ${managerPref.getFlagSpeakerphone()}")
             recorder?.apply {
                 setAudioSource(audioSource)
                 setOutputFormat(outputFormat)

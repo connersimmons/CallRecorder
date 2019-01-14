@@ -17,6 +17,7 @@
     <string name="pref_audio_source_mic" translatable="false">MIC</string>
     <string name="pref_audio_source_voice_call" translatable="false">VOICE_CALL</string>
     <string name="pref_audio_source_default" translatable="false">DEFAULT</string>
+    <string name="pref_speakerphone">Speakerphone</string>
     <string name="channel_id">channel_id</string>
     <string name="notification_title">Call Recorder</string>
     <string name="notification_text_mode_of_work">Mode of work</string>

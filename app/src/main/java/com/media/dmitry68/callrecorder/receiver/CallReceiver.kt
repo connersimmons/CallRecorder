@@ -39,7 +39,7 @@ class CallReceiver : BroadcastReceiver(){
                 ModeOfWork.Background -> {
                     onCallStateChanged(caller.statePhone, this::initRecord, this::stopRecord)
                 }
-                ModeOfWork.OnDemandShake -> {
+                ModeOfWork.OnDemandShake, ModeOfWork.OnDemandButton -> {
                    onCallStateChanged(caller.statePhone, this::messageOnDemandManagerOnCallStateChanged)
                 }
             }

@@ -42,7 +42,7 @@ class ShakeManager(context: Context,
     }
 
     private fun changeSensitivity(newSensitivity: Int){
-        val percentSensitivity = 1 - (newSensitivity.toFloat() / 100)
+        val percentSensitivity = 1 - (newSensitivity.toFloat() / 100)//TODO: test formula of threshold
         val thresholdGravity = 2 + (2.5F * percentSensitivity)
         Log.d(TAG, "ShakeManager: new ThresholdGravity: $thresholdGravity")
         shakeDetector.shakeThresholdGravity = thresholdGravity

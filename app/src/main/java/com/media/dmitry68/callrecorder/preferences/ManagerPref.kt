@@ -24,6 +24,8 @@ class ManagerPref(private val context : Context){
 
     fun getAudioSource() = sharedPref.getString(KEY_PREF_AUDIO_SOURCE, getPrefAudioSourceVoiceCommunication())!!
 
+    fun getFlagSpeakerphone() = sharedPref.getBoolean(KEY_PREF_SPEAKERPHONE, true)
+
     fun getModeOfWorkInSharedPref() : ModeOfWork {
         return when (getStringModeOfWorkInSharedPref()){
             getPrefModeOfWorkDefault() -> {
@@ -50,6 +52,7 @@ class ManagerPref(private val context : Context){
     fun getModeVibrateOnShake() = sharedPref.getBoolean(KEY_PREF_VIBRATE_ON_SHAKE, false)
 
     fun setStateService(state: Boolean){
+        Log.d(TAG, "ManagerPref: setStateService $state")
         sharedPrefEditor.putBoolean(KEY_PREF_SERVICE_STATUS, state)
         sharedPrefEditor.apply()
     }
@@ -96,6 +99,7 @@ class ManagerPref(private val context : Context){
         const val KEY_PREF_FLAG_SHOW_DIRECTION_CALL = "pref_flag_show_direction_call"
         const val KEY_PREF_FLAG_SHOW_NUMBER = "pref_flag_show_number"
         const val KEY_PREF_AUDIO_SOURCE = "pref_audio_source"
+        const val KEY_PREF_SPEAKERPHONE = "pref_speakerphone"
         const val KEY_PREF_SERVICE_STATUS = "pref_service_status"
         const val KEY_PREF_RECORDER_STATUS = "pref_recorder_status"
         const val KEY_PREF_MODE_OF_WORK = "pref_mode_of_work"

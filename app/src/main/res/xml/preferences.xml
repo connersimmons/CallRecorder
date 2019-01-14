@@ -56,5 +56,9 @@
                 android:entries="@array/entries_of_audio_source"
                 android:entryValues="@array/entries_of_audio_source"
                 android:key="pref_audio_source"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/pref_speakerphone"
+            android:key="pref_speakerphone"/>
     </PreferenceCategory>
 </android.support.v7.preference.PreferenceScreen>
