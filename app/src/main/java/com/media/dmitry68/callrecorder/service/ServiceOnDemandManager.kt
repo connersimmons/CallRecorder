@@ -133,12 +133,12 @@ class ServiceOnDemandManager(private val appContext: Context,
                         onStopRecordAction()
                     notificationManager.removeNotification()
                 }
-                ON_CALL_STATE_CHANGED -> {
+                ON_CALL_STATE_CHANGED -> {//TODO: receive this intent on call stop for get number and direct
                     Log.d(TAG, "ServiceOnDemandManager: onReceive ON_CALL_STATE_CHANGED")
                     flagCall = true
                     caller.number = intent.getStringExtra(CallReceiver.CALL_NUMBER)
                     caller.directCallState = intent.getStringExtra(CallReceiver.DIRECT_CALL)
-                    if (prefManager.getFlagSpeakerphone()) {//TODO: test this 
+                    if (prefManager.getFlagSpeakerphone()) {//TODO: test this
                         recorder.setSpeakerphoneInCall()
                     }
                 }

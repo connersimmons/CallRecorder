@@ -56,7 +56,9 @@ class ServiceManager(private val context: Context){
         LocalBroadcastManager.getInstance(context).registerReceiver(innerReceiverOnRestartService, intentFilterOnStopCallService)
     }
 
-    //TODO: test service on xiaomi device; stopwatch in background mode; notification on new file; add feature auto stop on call stop on demand mode
+    //TODO: test service on xiaomi device;
+    // TODO: stopwatch in background mode; notification on new file; add feature auto stop on call stop on demand mode
+    //TODO: feature on demand mode init with only call
 
     private fun manageForegroundCallService(actionStopOrStart: String){
         val intent = Intent().apply {
