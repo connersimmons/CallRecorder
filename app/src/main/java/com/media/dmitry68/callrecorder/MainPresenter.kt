@@ -55,10 +55,9 @@ class MainPresenter(
     }
 
     override fun onChangeModeOfWork(newModeOfWork: ModeOfWork) {
-        Log.d(TAG, "presenter: onChangeModeOfWork stateOfService ${model.stateOfService} newModeOfWork $newModeOfWork")
+        Log.d(TAG, "Presenter: onChangeModeOfWork stateOfService ${model.stateOfService} newModeOfWork $newModeOfWork")
         if (model.stateOfService){
-            serviceManager.registerReceiverForRestartService()
-            setSwitchCompatState(false)
+            initRestartService()
         }
         serviceManager.modeOfWork = newModeOfWork
     }
@@ -75,5 +74,10 @@ class MainPresenter(
         val initialModeOfWork = managerPref.getModeOfWorkInSharedPref()
         serviceManager.modeOfWork = initialModeOfWork
         Log.d(TAG, "presenter: Setup in initialState: ${model.stateOfService} in mode of work: $initialModeOfWork")
+    }
+
+    private fun initRestartService(){
+        serviceManager.registerReceiverForRestartService()
+        setSwitchCompatState(false)
     }
 }

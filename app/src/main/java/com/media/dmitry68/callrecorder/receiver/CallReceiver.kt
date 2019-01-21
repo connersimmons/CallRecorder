@@ -40,7 +40,7 @@ class CallReceiver : BroadcastReceiver(){
                     onCallStateChanged(caller.statePhone, this::initRecord, this::stopRecord)
                 }
                 ModeOfWork.OnDemandShake, ModeOfWork.OnDemandButton -> {
-                   onCallStateChanged(caller.statePhone, this::messageOnDemandManagerOnCallStateChanged)
+                   onCallStateChanged(caller.statePhone, this::messageOnDemandManagerOnCallStateStart, this::messageOnDemandManagerOnCallStateStop)
                 }
             }
         }
@@ -122,8 +122,16 @@ class CallReceiver : BroadcastReceiver(){
         recorder.stopRecord()
     }
 
-    private fun messageOnDemandManagerOnCallStateChanged(){
-        val intent = Intent(ServiceOnDemandManager.ON_CALL_STATE_CHANGED).apply {
+    private fun messageOnDemandManagerOnCallStateStart(){
+        val intent = Intent(ServiceOnDemandManager.ON_CALL_STATE_START).apply {
+            putExtra(CALL_NUMBER, caller.number)
+            putExtra(DIRECT_CALL, caller.directCallState)
+        }
+        LocalBroadcastManager.getInstance(receiverContext).sendBroadcast(intent)
+    }
+
+    private fun messageOnDemandManagerOnCallStateStop(){
+        val intent = Intent(ServiceOnDemandManager.ON_CALL_STATE_STOP).apply {
             putExtra(CALL_NUMBER, caller.number)
             putExtra(DIRECT_CALL, caller.directCallState)
         }

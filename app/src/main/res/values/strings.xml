@@ -30,9 +30,10 @@
     <string name="pref_mode_of_work_on_shake">On shake</string>
     <string name="pref_mode_of_work_on_button">On button</string>
     <string name="pref_mode_of_work">Mode of work</string>
+    <string name="pref_flag_start_mode_only_with_call">Start mode only with call</string>
     <string name="pref_count_of_shake">Count of shake</string>
     <string name="pref_sensitivity_shake">Sensitivity</string>
-    <string name="pref_vibrate_on_shake">Vibration</string>
+    <string name="pref_flag_vibrate_on_shake">Vibration</string>
     <string name="pref_category_on_shake_mode">Shake mode</string>
     <string name="seekBar_pref_summary" translatable="false">%1$d %2$s</string>
     <string-array name="entries_of_audio_source">

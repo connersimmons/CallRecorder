@@ -57,8 +57,7 @@ class ServiceManager(private val context: Context){
     }
 
     //TODO: test service on xiaomi device;
-    // TODO: stopwatch in background mode; notification on new file; add feature auto stop on call stop on demand mode
-    //TODO: feature on demand mode init with only call
+    // TODO: stopwatch in background mode; notification on new file
 
     private fun manageForegroundCallService(actionStopOrStart: String){
         val intent = Intent().apply {

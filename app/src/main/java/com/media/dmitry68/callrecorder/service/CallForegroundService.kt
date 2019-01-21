@@ -78,7 +78,11 @@ class CallForegroundService : Service(){
                 state = ModeOfWork.OnDemandShake
                 startNotification()
                 initOnDemandManager()
-                initShakeMode()
+                if (prefManager.getFlagStartModeOnlyWithCall()){
+                    serviceOnDemandManager.initOnDemandWithCallMode()
+                } else {
+                    initShakeMode()
+                }
                 prefManager.setStateService(true)
             }
             STOP_FOREGROUND_ON_DEMAND_SHAKE_RECORD_ACTION -> {
@@ -92,7 +96,11 @@ class CallForegroundService : Service(){
                 state = ModeOfWork.OnDemandButton
                 startNotification()
                 initOnDemandManager()
-                initButtonMode()
+                if (prefManager.getFlagStartModeOnlyWithCall()){
+                    serviceOnDemandManager.initOnDemandWithCallMode()
+                } else {
+                    initButtonMode()
+                }
                 prefManager.setStateService(true)
             }
             STOP_FOREGROUND_ON_DEMAND_BUTTON_RECORD_ACTION -> {

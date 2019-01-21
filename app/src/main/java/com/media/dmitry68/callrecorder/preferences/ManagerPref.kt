@@ -45,11 +45,13 @@ class ManagerPref(private val context : Context){
 
     fun getStringModeOfWorkInSharedPref() = sharedPref.getString(KEY_PREF_MODE_OF_WORK, getPrefModeOfWorkDefault())!!
 
+    fun getFlagStartModeOnlyWithCall() = sharedPref.getBoolean(KEY_PREF_FLAG_START_MODE_ONLY_WITH_CALL, true)
+
     fun getCountOfShake() = sharedPref.getInt(KEY_PREF_COUNT_OF_SHAKE, 3)
 
     fun getSensitivityShake() = sharedPref.getInt(KEY_PREF_SENSITIVITY_SHAKE, 70)
 
-    fun getModeVibrateOnShake() = sharedPref.getBoolean(KEY_PREF_VIBRATE_ON_SHAKE, false)
+    fun getModeVibrateOnShake() = sharedPref.getBoolean(KEY_PREF_FLAG_VIBRATE_ON_SHAKE, false)
 
     fun setStateService(state: Boolean){
         Log.d(TAG, "ManagerPref: setStateService $state")
@@ -62,7 +64,7 @@ class ManagerPref(private val context : Context){
     //TODO: make manager of resource for next fun
     private fun getPrefModeOfWorkDefault() : String = context.getString(R.string.pref_mode_of_work_default)
 
-    private fun getPrefModeOfWorkOnDemandButton(): String = context.getString(R.string.pref_mode_of_work_on_button)
+    fun getPrefModeOfWorkOnDemandButton(): String = context.getString(R.string.pref_mode_of_work_on_button)
 
     fun getPrefModeOfWorkOnDemandShake() : String = context.getString(R.string.pref_mode_of_work_on_shake)
 
@@ -78,6 +80,7 @@ class ManagerPref(private val context : Context){
         Log.d(TAG, "ManagerPref register on SharedPreferenceChangeReceiver")
         val intentFilterOnChangeModeOfWork = IntentFilter(SettingsFragment.CHANGE_PREFERENCE_MODE_OF_WORK).apply {
             addAction(SettingsFragment.PAUSE_PREFERENCE_FRAGMENT)
+            addAction(SettingsFragment.CHANGE_PREFERENCE_START_MODE_ONLY_WITH_CALL)
         }
         localBroadcastManager.registerReceiver(receiverOnChangePref, intentFilterOnChangeModeOfWork)
     }
@@ -95,10 +98,12 @@ class ManagerPref(private val context : Context){
         const val KEY_PREF_SPEAKERPHONE = "pref_speakerphone"
         const val KEY_PREF_SERVICE_STATUS = "pref_service_status"
         const val KEY_PREF_MODE_OF_WORK = "pref_mode_of_work"
+        const val KEY_PREF_FLAG_START_MODE_ONLY_WITH_CALL = "pref_flag_start_mode_only_with_call"
+        const val KEY_PREF_CATEGORY_GENERAL = "pref_category_general"
         const val KEY_PREF_CATEGORY_ON_SHAKE_MODE = "pref_category_on_shake_mode"
         const val KEY_PREF_COUNT_OF_SHAKE = "pref_count_of_shake"
         const val KEY_PREF_SENSITIVITY_SHAKE = "pref_sensitivity_shake"
-        const val KEY_PREF_VIBRATE_ON_SHAKE = "pref_vibrate_on_shake"
+        const val KEY_PREF_FLAG_VIBRATE_ON_SHAKE = "pref_flag_vibrate_on_shake"
     }
 
     inner class ReceiverOnChangePref: BroadcastReceiver(){
@@ -109,6 +114,10 @@ class ManagerPref(private val context : Context){
                 }
                 SettingsFragment.CHANGE_PREFERENCE_MODE_OF_WORK -> {
                     Log.d(TAG, "ManagerPref: CHANGE_PREFERENCE_MODE_OF_WORK")
+                    presenter?.onChangeModeOfWork(getModeOfWorkInSharedPref())
+                }
+                SettingsFragment.CHANGE_PREFERENCE_START_MODE_ONLY_WITH_CALL -> {
+                    Log.d(TAG, "ManagerPref: CHANGE_PREFERENCE_START_MODE_ONLY_WITH_CALL")
                     presenter?.onChangeModeOfWork(getModeOfWorkInSharedPref())
                 }
             }

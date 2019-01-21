@@ -56,6 +56,8 @@ class NotifyManager(private val context: Context) {
         updateNotification()
     }
 
+    fun isEmptyOfNotificationActions() : Boolean = notificationBuilder.mActions.isEmpty()
+
     fun removeNotification() = notificationManager.cancel(NOTIFICATION_ID)
 
     fun addText(text: String){

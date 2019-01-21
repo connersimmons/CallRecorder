@@ -33,6 +33,15 @@ class ServiceOnDemandManager(private val appContext: Context,
     private val iconStartRecord = R.drawable.start_record_button_notification
     private val iconStopRecord = R.drawable.stop_record_button_notification
 
+    fun initOnDemandWithCallMode() {
+        Log.d(TAG, "ServiceOnDemandManager: InitOnDemandWithCallMode")
+        localBroadcastManager.registerReceiver(innerReceiverForManageRecorder, IntentFilter(ON_CALL_STATE_START).apply {
+            addAction(ON_CALL_STATE_STOP)
+            addAction(CallForegroundService.STOP_FOREGROUND_SERVICE)
+        })
+        localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_CALL_RECEIVER))
+    }
+
     fun initButtonMode(){
         Log.d(TAG, "ServiceOnDemandManager: Init button mode")
         appContext.registerReceiver(innerReceiverForManageRecorder, IntentFilter(START_RECORD_ACTION_ON_BUTTON_MODE))
@@ -43,59 +52,88 @@ class ServiceOnDemandManager(private val appContext: Context,
     fun startRecordOnShakeMode(){
         Log.d(TAG, "ServiceOnDemandManager: Start record on shake mode")
         vibrateManager.vibrate(1000L)
-        caller = Caller()
-        startRecordOnDemand(caller)
+        onStartRecordActionOnDemandMode()
         localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_REGISTER_SHAKE_DETECTOR))
     }
 
     private fun startRecordOnButtonMode(){
         Log.d(TAG, "ServiceOnDemandManager: Start record on button mode")
         unregisterInnerReceiverAndClearActionInNotification()
-        caller = Caller()
-        startRecordOnDemand(caller)
+        onStartRecordActionOnDemandMode()
     }
 
-    private fun startRecordOnDemand(currentCaller: Caller){
+    private fun onStartRecordActionOnDemandMode(){
         Log.d(TAG, "ServiceOnDemandManager: Start record on demand")
-        initRecord(currentCaller)
-        stopwatchManager = StopwatchManager(notificationManager)
-        stopwatchManager.start()
-        notificationManager.addAction(STOP_RECORD_ACTION_ON_DEMAND_MODE, actionStopRecorderText, iconStopRecord)
+        onStartRecord()
         appContext.registerReceiver(innerReceiverForManageRecorder, IntentFilter(STOP_RECORD_ACTION_ON_DEMAND_MODE))
-        localBroadcastManager.registerReceiver(innerReceiverForManageRecorder, IntentFilter(ON_CALL_STATE_CHANGED).apply {
+        localBroadcastManager.registerReceiver(innerReceiverForManageRecorder, IntentFilter(ON_CALL_STATE_START).apply {
+            addAction(ON_CALL_STATE_STOP)
             addAction(CallForegroundService.STOP_FOREGROUND_SERVICE)
         })
         localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_CALL_RECEIVER))
     }
 
-    private fun initRecord(currentCaller: Caller) {
-        recorder = Recorder(currentCaller, appContext).apply { startRecord() }
+    private fun onStartRecord(){
+        initRecorder()
+        stopwatchManager = StopwatchManager(notificationManager)
+        stopwatchManager.start()
+        notificationManager.addAction(STOP_RECORD_ACTION_ON_DEMAND_MODE, actionStopRecorderText, iconStopRecord)
+    }
+
+    private fun initRecorder() {
+        recorder = Recorder(caller, appContext).apply { startRecord() }
+    }
+
+    private fun onStopRecordActionOnDemandMode(){
+        unregisterInnerReceiverAndClearActionInNotification()
+        onStopRecord()
+        when (modeOfWork) {
+            ModeOfWork.Background -> {
+                throw IllegalStateException("Error: STOP_RECORD_ACTION_ON_DEMAND_MODE with mode of work Background")
+            }
+            ModeOfWork.OnDemandShake -> {
+                localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_CALL_RECEIVER))
+                localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_REGISTER_SHAKE_DETECTOR))
+                notificationManager.addText(notificationManager.contentText)
+            }
+            ModeOfWork.OnDemandButton -> {
+                localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_CALL_RECEIVER))
+                initButtonMode()
+                notificationManager.addText(notificationManager.contentText)
+            }
+        }
     }
 
     private fun unregisterInnerReceiverAndClearActionInNotification(){
-        notificationManager.removeAction()
-        appContext.unregisterReceiver(innerReceiverForManageRecorder)
         localBroadcastManager.unregisterReceiver(innerReceiverForManageRecorder)
+        if (notificationManager.isEmptyOfNotificationActions()){
+            return
+        } else {
+            notificationManager.removeAction()
+            appContext.unregisterReceiver(innerReceiverForManageRecorder)
+        }
     }
 
-    private fun onStopRecordAction(){
+    private fun onStopRecord(){
         Log.d(TAG, "ServiceOnDemandManager: onStopRecordAction")
-        stopRecord()
+        stopRecorder()
         stopwatchManager.stop()
     }
 
-    private fun stopRecord(){
+    private fun stopRecorder(){
         Log.d(TAG, "Stop record on Demand Manager")
         recorder.stopRecord()
         if (flagCall)
             recorder.addToAudioFileCallNumberAndDirection()
+        caller = Caller()
         flagCall = false
     }
 
     companion object {
         const val START_RECORD_ACTION_ON_BUTTON_MODE = "com.media.dmitry68.callrecorder.service.START_RECORD_ACTION_ON_BUTTON_MODE"
         const val STOP_RECORD_ACTION_ON_DEMAND_MODE = "com.media.dmitry68.callrecorder.service.STOP_RECORD_ACTION_ON_DEMAND_MODE"
-        const val ON_CALL_STATE_CHANGED = "com.media.dmitry68.callrecorder.service.ON_CALL_STATE_CHANGED"
+        const val ON_CALL_STATE_START = "com.media.dmitry68.callrecorder.service.ON_CALL_STATE_START"
+        const val ON_CALL_STATE_STOP = "com.media.dmitry68.callrecorder.service.ON_CALL_STATE_STOP"
     }
 
     inner class ReceiverOfManageRecorder : BroadcastReceiver(){
@@ -107,40 +145,43 @@ class ServiceOnDemandManager(private val appContext: Context,
                 }
                 STOP_RECORD_ACTION_ON_DEMAND_MODE -> {
                     Log.d(TAG, "ServiceOnDemandManager: onReceive STOP_RECORD_ACTION_ON_DEMAND_MODE $modeOfWork")
-                    unregisterInnerReceiverAndClearActionInNotification()
-                    onStopRecordAction()
-                    when (modeOfWork) {
-                        ModeOfWork.Background -> {
-                            throw IllegalStateException("Error: STOP_RECORD_ACTION_ON_DEMAND_MODE with mode of work Background")
-                        }
-                        ModeOfWork.OnDemandShake -> {
-                            localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_CALL_RECEIVER))
-                            localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_REGISTER_SHAKE_DETECTOR))
-                            notificationManager.addText(notificationManager.contentText)
-                        }
-                        ModeOfWork.OnDemandButton -> {
-                            localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_CALL_RECEIVER))
-                            initButtonMode()
-                            notificationManager.addText(notificationManager.contentText)
-                        }
-                    }
+                    onStopRecordActionOnDemandMode()
                 }
                 CallForegroundService.STOP_FOREGROUND_SERVICE -> {
                     Log.d(TAG, "ServiceOnDemandManager: onReceive STOP_FOREGROUND_SERVICE")
                     unregisterInnerReceiverAndClearActionInNotification()
                     if (Recorder.flagStarted)
-                        onStopRecordAction()
+                        onStopRecord()
                     notificationManager.removeNotification()
                 }
-                ON_CALL_STATE_CHANGED -> {//TODO: receive this intent on call stop for get number and direct
-                    Log.d(TAG, "ServiceOnDemandManager: onReceive ON_CALL_STATE_CHANGED")
+                ON_CALL_STATE_START -> {
+                    Log.d(TAG, "ServiceOnDemandManager: onReceive ON_CALL_STATE_START")
+                    if (prefManager.getFlagStartModeOnlyWithCall()){
+                        when(modeOfWork) {
+                            ModeOfWork.Background -> {
+                                throw IllegalStateException("Error: ON_CALL_STATE_START with mode of work Background")
+                            }
+                            ModeOfWork.OnDemandShake -> {
+                                localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_REGISTER_SHAKE_DETECTOR))
+                            }
+                            ModeOfWork.OnDemandButton -> {
+                                initButtonMode()
+                            }
+                        }
+                    } else if (prefManager.getFlagSpeakerphone()) {//TODO: make good job of speakerphone and recorder
+                        notificationManager.removeAction()
+                        onStopRecord()
+                        onStartRecord()
+                    }
                     flagCall = true
                     caller.number = intent.getStringExtra(CallReceiver.CALL_NUMBER)
                     caller.directCallState = intent.getStringExtra(CallReceiver.DIRECT_CALL)
-                    if (prefManager.getFlagSpeakerphone()) {//TODO: test this
-                        onStopRecordAction()
-                        startRecordOnDemand(caller)
-                    }
+                }
+                ON_CALL_STATE_STOP -> {
+                    Log.d(TAG, "ServiceOnDemandManager: onReceive ON_CALL_STATE_STOP")
+                    caller.number = intent.getStringExtra(CallReceiver.CALL_NUMBER)
+                    caller.directCallState = intent.getStringExtra(CallReceiver.DIRECT_CALL)
+                    onStopRecordActionOnDemandMode() //TODO: make it preference if flag only with call false
                 }
             }
         }

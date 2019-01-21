@@ -2,13 +2,18 @@
 <android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                                                 xmlns:sample="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
-            android:title="@string/pref_category_general">
+            android:title="@string/pref_category_general"
+            android:key="pref_category_general">
         <ListPreference
                 android:defaultValue="@string/pref_mode_of_work_default"
                 android:title="@string/pref_mode_of_work"
                 android:entries="@array/modes_of_work"
                 android:entryValues="@array/modes_of_work"
                 android:key="pref_mode_of_work"/>
+        <CheckBoxPreference
+                android:defaultValue="true"
+                android:title="@string/pref_flag_start_mode_only_with_call"
+                android:key="pref_flag_start_mode_only_with_call"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_category_on_shake_mode"
@@ -28,8 +33,8 @@
         />
         <CheckBoxPreference
                 android:defaultValue="true"
-                android:title="@string/pref_vibrate_on_shake"
-                android:key="pref_vibrate_on_shake"/>
+                android:title="@string/pref_flag_vibrate_on_shake"
+                android:key="pref_flag_vibrate_on_shake"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_category_name_file">
