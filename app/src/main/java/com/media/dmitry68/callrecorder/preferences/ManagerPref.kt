@@ -59,13 +59,6 @@ class ManagerPref(private val context : Context){
 
     fun getStateService() = sharedPref.getBoolean(KEY_PREF_SERVICE_STATUS, false)
 
-    fun setStateRecorder(state: Boolean){
-        sharedPrefEditor.putBoolean(KEY_PREF_RECORDER_STATUS, state)
-        sharedPrefEditor.apply()
-    }
-
-    fun getStateRecorder() = sharedPref.getBoolean(KEY_PREF_RECORDER_STATUS, false)
-
     //TODO: make manager of resource for next fun
     private fun getPrefModeOfWorkDefault() : String = context.getString(R.string.pref_mode_of_work_default)
 
@@ -101,7 +94,6 @@ class ManagerPref(private val context : Context){
         const val KEY_PREF_AUDIO_SOURCE = "pref_audio_source"
         const val KEY_PREF_SPEAKERPHONE = "pref_speakerphone"
         const val KEY_PREF_SERVICE_STATUS = "pref_service_status"
-        const val KEY_PREF_RECORDER_STATUS = "pref_recorder_status"
         const val KEY_PREF_MODE_OF_WORK = "pref_mode_of_work"
         const val KEY_PREF_CATEGORY_ON_SHAKE_MODE = "pref_category_on_shake_mode"
         const val KEY_PREF_COUNT_OF_SHAKE = "pref_count_of_shake"

@@ -18,7 +18,6 @@ import com.media.dmitry68.callrecorder.service.ServiceManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), MVPView{
-
     private val TAG = "LOG"
     private val permissionManager = PermissionManager(this)
     private lateinit var serviceManager: ServiceManager

@@ -25,7 +25,7 @@ class Recorder(
 
     companion object {
         private var recorder: MediaRecorder? = null
-        private var flagStarted = false
+        var flagStarted = false
     }
     private var audioFile: File? = null
     private val TAG = "LOG"
@@ -69,7 +69,7 @@ class Recorder(
         }
     }
 
-    fun setSpeakerphoneInCall(){
+    private fun setSpeakerphoneInCall(){
         val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
         audioManager.mode = AudioManager.MODE_IN_CALL
         Log.d(TAG, "Speakerphone ON")

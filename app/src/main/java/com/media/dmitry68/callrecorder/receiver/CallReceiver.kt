@@ -116,12 +116,10 @@ class CallReceiver : BroadcastReceiver(){
 
     private fun initRecord() {
         recorder = Recorder(caller, receiverContext).apply { startRecord() }//TODO: add stopwatch and text in notification
-        managerPref.setStateRecorder(true)
     }
 
     private fun stopRecord(){
         recorder.stopRecord()
-        managerPref.setStateRecorder(false)
     }
 
     private fun messageOnDemandManagerOnCallStateChanged(){

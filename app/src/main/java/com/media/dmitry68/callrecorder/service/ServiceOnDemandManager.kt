@@ -43,20 +43,21 @@ class ServiceOnDemandManager(private val appContext: Context,
     fun startRecordOnShakeMode(){
         Log.d(TAG, "ServiceOnDemandManager: Start record on shake mode")
         vibrateManager.vibrate(1000L)
-        startRecordOnDemand()
+        caller = Caller()
+        startRecordOnDemand(caller)
         localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_REGISTER_SHAKE_DETECTOR))
     }
 
     private fun startRecordOnButtonMode(){
         Log.d(TAG, "ServiceOnDemandManager: Start record on button mode")
         unregisterInnerReceiverAndClearActionInNotification()
-        startRecordOnDemand()
+        caller = Caller()
+        startRecordOnDemand(caller)
     }
 
-    private fun startRecordOnDemand(){
+    private fun startRecordOnDemand(currentCaller: Caller){
         Log.d(TAG, "ServiceOnDemandManager: Start record on demand")
-        caller = Caller()
-        initRecord()
+        initRecord(currentCaller)
         stopwatchManager = StopwatchManager(notificationManager)
         stopwatchManager.start()
         notificationManager.addAction(STOP_RECORD_ACTION_ON_DEMAND_MODE, actionStopRecorderText, iconStopRecord)
@@ -67,9 +68,8 @@ class ServiceOnDemandManager(private val appContext: Context,
         localBroadcastManager.sendBroadcast(Intent(CallForegroundService.START_CALL_RECEIVER))
     }
 
-    private fun initRecord() {
-        recorder = Recorder(caller, appContext).apply { startRecord() }
-        prefManager.setStateRecorder(true)
+    private fun initRecord(currentCaller: Caller) {
+        recorder = Recorder(currentCaller, appContext).apply { startRecord() }
     }
 
     private fun unregisterInnerReceiverAndClearActionInNotification(){
@@ -87,7 +87,6 @@ class ServiceOnDemandManager(private val appContext: Context,
     private fun stopRecord(){
         Log.d(TAG, "Stop record on Demand Manager")
         recorder.stopRecord()
-        prefManager.setStateRecorder(false)
         if (flagCall)
             recorder.addToAudioFileCallNumberAndDirection()
         flagCall = false
@@ -102,7 +101,7 @@ class ServiceOnDemandManager(private val appContext: Context,
     inner class ReceiverOfManageRecorder : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action){
-                START_RECORD_ACTION_ON_BUTTON_MODE -> {//TODO:make START_RECORD_ACTION_ON_DEMAND_MODE
+                START_RECORD_ACTION_ON_BUTTON_MODE -> {//TODO: make START_RECORD_ACTION_ON_DEMAND_MODE
                     Log.d(TAG, "ServiceOnDemandManager: onReceive START_RECORD_ACTION_ON_BUTTON_MODE")
                     startRecordOnButtonMode()
                 }
@@ -129,7 +128,7 @@ class ServiceOnDemandManager(private val appContext: Context,
                 CallForegroundService.STOP_FOREGROUND_SERVICE -> {
                     Log.d(TAG, "ServiceOnDemandManager: onReceive STOP_FOREGROUND_SERVICE")
                     unregisterInnerReceiverAndClearActionInNotification()
-                    if (prefManager.getStateRecorder())
+                    if (Recorder.flagStarted)
                         onStopRecordAction()
                     notificationManager.removeNotification()
                 }
@@ -139,7 +138,8 @@ class ServiceOnDemandManager(private val appContext: Context,
                     caller.number = intent.getStringExtra(CallReceiver.CALL_NUMBER)
                     caller.directCallState = intent.getStringExtra(CallReceiver.DIRECT_CALL)
                     if (prefManager.getFlagSpeakerphone()) {//TODO: test this
-                        recorder.setSpeakerphoneInCall()
+                        onStopRecordAction()
+                        startRecordOnDemand(caller)
                     }
                 }
             }
