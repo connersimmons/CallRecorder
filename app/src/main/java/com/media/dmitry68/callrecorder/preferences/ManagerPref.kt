@@ -79,7 +79,7 @@ class ManagerPref(private val context : Context){
     fun registerListenerOnSharedPref() {
         Log.d(TAG, "ManagerPref register on SharedPreferenceChangeReceiver")
         val intentFilterOnChangeModeOfWork = IntentFilter(SettingsFragment.CHANGE_PREFERENCE_MODE_OF_WORK).apply {
-            addAction(SettingsFragment.PAUSE_PREFERENCE_FRAGMENT)
+            addAction(SettingsFragment.DESTROY_PREFERENCE_FRAGMENT)
             addAction(SettingsFragment.CHANGE_PREFERENCE_START_MODE_ONLY_WITH_CALL)
         }
         localBroadcastManager.registerReceiver(receiverOnChangePref, intentFilterOnChangeModeOfWork)
@@ -109,7 +109,7 @@ class ManagerPref(private val context : Context){
     inner class ReceiverOnChangePref: BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-                SettingsFragment.PAUSE_PREFERENCE_FRAGMENT -> {
+                SettingsFragment.DESTROY_PREFERENCE_FRAGMENT -> {
                     unRegisterListenerOnSharedPref()
                 }
                 SettingsFragment.CHANGE_PREFERENCE_MODE_OF_WORK -> {

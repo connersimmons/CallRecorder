@@ -184,6 +184,13 @@ class ServiceOnDemandManager(private val appContext: Context,
                     if (Recorder.flagStarted) {
                         onStopRecordActionOnDemandMode() //TODO: make it preference if flag only with call false
                     }
+                    if (prefManager.getFlagStartModeOnlyWithCall()){
+                        if (modeOfWork == ModeOfWork.OnDemandShake){
+                            localBroadcastManager.sendBroadcast(Intent(CallForegroundService.STOP_REGISTER_SHAKE_DETECTOR))
+                        }
+                        unregisterInnerReceiverAndClearActionInNotification()
+                        initOnDemandWithCallMode()
+                    }
                 }
             }
         }

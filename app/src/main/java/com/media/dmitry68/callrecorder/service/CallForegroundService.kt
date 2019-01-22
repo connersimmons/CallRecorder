@@ -22,9 +22,6 @@ class CallForegroundService : Service(){
     private val innerReceiver = ReceiverOfManageOnDemandMode()
     private val TAG = "LOG"
     private var sensorManager: SensorManager? = null
-    private var isRegisterCallReceiver = false
-    private var isRegisterInnerReceiver = false
-    private var isRegisterShakeDetector = false
     private lateinit var notifyManager: NotifyManager
     private lateinit var serviceOnDemandManager: ServiceOnDemandManager
     private lateinit var shakeDetector: ShakeDetector
@@ -78,10 +75,11 @@ class CallForegroundService : Service(){
                 state = ModeOfWork.OnDemandShake
                 startNotification()
                 initOnDemandManager()
+                initShakeMode()
                 if (prefManager.getFlagStartModeOnlyWithCall()){
-                    serviceOnDemandManager.initOnDemandWithCallMode()
+                    initOnDemandOnlyWithCallMode()
                 } else {
-                    initShakeMode()
+                    registerShakeDetector()
                 }
                 prefManager.setStateService(true)
             }
@@ -97,7 +95,7 @@ class CallForegroundService : Service(){
                 startNotification()
                 initOnDemandManager()
                 if (prefManager.getFlagStartModeOnlyWithCall()){
-                    serviceOnDemandManager.initOnDemandWithCallMode()
+                    initOnDemandOnlyWithCallMode()
                 } else {
                     initButtonMode()
                 }
@@ -116,6 +114,11 @@ class CallForegroundService : Service(){
         serviceOnDemandManager = ServiceOnDemandManager(applicationContext, notifyManager)
     }
 
+    private fun initOnDemandOnlyWithCallMode(){
+        localBroadcastManager.registerReceiver(innerReceiver, IntentFilter(START_CALL_RECEIVER))
+        serviceOnDemandManager.initOnDemandWithCallMode()
+    }
+
     private fun startNotification(){
         notifyManager = NotifyManager(applicationContext)
         val notificationBuilder = notifyManager.builder().build()
@@ -123,12 +126,14 @@ class CallForegroundService : Service(){
     }
 
     private fun startCallReceiver() {
-        if (callReceiver == null)
-            callReceiver = CallReceiver()
-        val intentFilterPhoneStateChange = IntentFilter(IntentActions.PHONE_STAGE_CHANGED)
-        registerReceiver(callReceiver, intentFilterPhoneStateChange)
-        isRegisterCallReceiver = true
-        Log.d(TAG, "Service register Call receiver")
+        if (!isRegisterCallReceiver) {
+            if (callReceiver == null)
+                callReceiver = CallReceiver()
+            val intentFilterPhoneStateChange = IntentFilter(IntentActions.PHONE_STAGE_CHANGED)
+            registerReceiver(callReceiver, intentFilterPhoneStateChange)
+            isRegisterCallReceiver = true
+            Log.d(TAG, "Service register Call receiver")
+        }
     }
 
     private fun initShakeMode() {
@@ -142,7 +147,6 @@ class CallForegroundService : Service(){
         shakeDetector = ShakeDetector(serviceOnDemandManager)
         shakeManager = ShakeManager(applicationContext, shakeDetector)
         isRegisterInnerReceiver = true
-        registerShakeDetector()
     }
 
     private fun registerShakeDetector(){
@@ -181,8 +185,8 @@ class CallForegroundService : Service(){
         if (callReceiver != null && isRegisterCallReceiver) {
             unregisterReceiver(callReceiver)
             isRegisterCallReceiver = false
+            Log.d(TAG, "Service unregister call receiver")
         }
-        Log.d(TAG, "Service unregister call receiver")
     }
 
     private fun unRegisterShakeDetector(){
@@ -195,6 +199,10 @@ class CallForegroundService : Service(){
     }
 
     companion object {
+        private var isRegisterCallReceiver = false
+        private var isRegisterInnerReceiver = false
+        private var isRegisterShakeDetector = false
+
         const val STOP_FOREGROUND_SERVICE = "com.media.dmitry68.callrecorder.service.STOP_FOREGROUND_SERVICE"
 
         const val START_FOREGROUND_AUTO_CALL_RECORD_ACTION = "com.media.dmitry68.callrecorder.service.START_FOREGROUND_AUTO_CALL_RECORD"

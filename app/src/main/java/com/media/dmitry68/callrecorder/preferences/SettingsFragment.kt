@@ -40,10 +40,10 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onDestroy() {
+        super.onDestroy()
         preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-        LocalBroadcastManager.getInstance(context!!).sendBroadcast(Intent(PAUSE_PREFERENCE_FRAGMENT))
+        localBroadcastManager.sendBroadcast(Intent(DESTROY_PREFERENCE_FRAGMENT))
     }
 
     override fun onDisplayPreferenceDialog(preference: Preference?) {
@@ -122,7 +122,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     }
 
     companion object {
-        const val PAUSE_PREFERENCE_FRAGMENT = "com.media.dmitry68.callrecorder.preferences.PAUSE_PREFERENCE_FRAGMENT"
+        const val DESTROY_PREFERENCE_FRAGMENT = "com.media.dmitry68.callrecorder.preferences.DESTROY_PREFERENCE_FRAGMENT"
         const val CHANGE_PREFERENCE_MODE_OF_WORK = "com.media.dmitry68.callrecorder.preferences.CHANGE_PREFERENCE_MODE_OF_WORK"
         const val CHANGE_PREFERENCE_START_MODE_ONLY_WITH_CALL = "com.media.dmitry68.callrecorder.preferences.CHANGE_PREFERENCE_START_MODE_ONLY_WITH_CALL"
         const val CHANGE_PREFERENCE_COUNT_OF_SHAKE = "com.media.dmitry68.callrecorder.preferences.CHANGE_PREFERENCE_COUNT_OF_SHAKE"
