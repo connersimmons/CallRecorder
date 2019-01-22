@@ -7,6 +7,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import com.media.dmitry68.callrecorder.R
 
 
 class PermissionManager(private val activity: AppCompatActivity) {
@@ -56,8 +57,8 @@ class PermissionManager(private val activity: AppCompatActivity) {
     private fun showMessage(message: StringBuilder, onClickListener: DialogInterface.OnClickListener) {
         AlertDialog.Builder(activity).
                 setMessage(message).
-                setPositiveButton("OK", onClickListener).
-                setNegativeButton("Cancel", null).
+                setPositiveButton(activity.getString(R.string.permission_positive_button), onClickListener).
+                setNegativeButton(activity.getString(R.string.permission_negative_button), null).
                 create().
                 show()
     }

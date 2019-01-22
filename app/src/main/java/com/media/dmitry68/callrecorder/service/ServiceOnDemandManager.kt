@@ -181,7 +181,9 @@ class ServiceOnDemandManager(private val appContext: Context,
                     Log.d(TAG, "ServiceOnDemandManager: onReceive ON_CALL_STATE_STOP")
                     caller.number = intent.getStringExtra(CallReceiver.CALL_NUMBER)
                     caller.directCallState = intent.getStringExtra(CallReceiver.DIRECT_CALL)
-                    onStopRecordActionOnDemandMode() //TODO: make it preference if flag only with call false
+                    if (Recorder.flagStarted) {
+                        onStopRecordActionOnDemandMode() //TODO: make it preference if flag only with call false
+                    }
                 }
             }
         }

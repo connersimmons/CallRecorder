@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">CallRecorder</string>
+    <string name="permission_positive_button">OK</string>
+    <string name="permission_negative_button">Cancel</string>
     <string name="message_permission_phone_state">to read phone state</string>
     <string name="message_permission_write_external_storage">to write to external storage</string>
     <string name="start_message_permission">You need to grant access  </string>
@@ -18,7 +20,7 @@
     <string name="pref_audio_source_voice_call" translatable="false">VOICE_CALL</string>
     <string name="pref_audio_source_default" translatable="false">DEFAULT</string>
     <string name="pref_speakerphone">Speakerphone</string>
-    <string name="channel_id">channel_id</string>
+    <string name="channel_name" translatable="false">Recorder channel</string>
     <string name="notification_title">Call Recorder</string>
     <string name="notification_text_mode_of_work">Mode of work</string>
     <string name="notification_text_recorder_status">Recorder ready</string>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Диктофон для звонков</string>
+    <string name="permission_positive_button">Ясно</string>
+    <string name="permission_negative_button">Отмена</string>
+    <string name="message_permission_phone_state">на определение состояния телефона</string>
+    <string name="message_permission_write_external_storage">на запись во внешнее хранилище</string>
+    <string name="start_message_permission">Вам необходимо предоставить разрешение</string>
+    <string name="pref_file_name">Префикс</string>
+    <string name="pref_file_name_default">Запись</string>
+    <string name="pref_flag_show_direction">Показывать направление вызова</string>
+    <string name="pref_category_name_file">Имя файла</string>
+    <string name="pref_flag_show_number">Показывать телефонный номер</string>
+    <string name="settings">Настройки</string>
+    <string name="message_problem_with_permission">Некоторые разрешения не предоставлены</string>
+    <string name="message_permission_record_audio">на запись звука</string>
+    <string name="pref_category_recorder">Диктофон</string>
+    <string name="pref_audio_source">Источник звука</string>
+    <string name="pref_speakerphone">Спикерфон</string>
+    <string name="notification_title">Диктофон для звонков</string>
+    <string name="notification_text_mode_of_work">Режим работы</string>
+    <string name="notification_text_recorder_status">Диктофон готов к работе</string>
+    <string name="notification_action_start_recorder">Старт</string>
+    <string name="notification_action_stop_recorder">Стоп</string>
+    <string name="state_service">Диктофон</string>
+    <string name="pref_category_general">Общие</string>
+    <string name="pref_mode_of_work_default">Фоновый</string>
+    <string name="pref_mode_of_work_on_shake">По встряске</string>
+    <string name="pref_mode_of_work_on_button">По кнопке</string>
+    <string name="pref_mode_of_work">Режим работы</string>
+    <string name="pref_flag_start_mode_only_with_call">Работа только при вызове</string>
+    <string name="pref_count_of_shake">Количество встрясок</string>
+    <string name="pref_sensitivity_shake">Чувствительность</string>
+    <string name="pref_flag_vibrate_on_shake">Виброотклик</string>
+    <string name="pref_category_on_shake_mode">Режим встряски</string>
+    <string-array name="modes_of_work">
+        <item>Фоновый</item>
+        <item>По встряске</item>
+        <item>По кнопке</item>
+    </string-array>
+</resources>

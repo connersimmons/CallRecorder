@@ -56,7 +56,7 @@
     <PreferenceCategory
             android:title="@string/pref_category_recorder">
         <ListPreference
-                android:defaultValue="@string/pref_audio_source_default"
+                android:defaultValue="@string/pref_audio_source_mic"
                 android:title="@string/pref_audio_source"
                 android:entries="@array/entries_of_audio_source"
                 android:entryValues="@array/entries_of_audio_source"
