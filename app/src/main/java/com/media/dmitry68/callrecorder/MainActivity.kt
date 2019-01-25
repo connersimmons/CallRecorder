@@ -3,6 +3,7 @@ package com.media.dmitry68.callrecorder
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -56,15 +57,25 @@ class MainActivity : AppCompatActivity(), MVPView{
             PermissionManager.REQUEST_CODE_ASK_PERMISSIONS -> {
                 val perms = HashMap<String, Int>()
                 with(perms){
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
+                        put(Manifest.permission.READ_CALL_LOG, PackageManager.PERMISSION_GRANTED)
+                    }
                     put(Manifest.permission.READ_PHONE_STATE, PackageManager.PERMISSION_GRANTED)
                     put(Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED)
                     put(Manifest.permission.RECORD_AUDIO, PackageManager.PERMISSION_GRANTED)
                 }
                 for (i in 0 until permissions.size)
                     perms[permissions[i]] = grantResults[i]
+                var flagPermissionForPie = true
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
+                    if (perms[Manifest.permission.READ_CALL_LOG] != PackageManager.PERMISSION_GRANTED){
+                        flagPermissionForPie = false
+                    }
+                }
                 if (perms[Manifest.permission.READ_PHONE_STATE] == PackageManager.PERMISSION_GRANTED
                     && perms[Manifest.permission.WRITE_EXTERNAL_STORAGE] == PackageManager.PERMISSION_GRANTED
-                    && perms[Manifest.permission.RECORD_AUDIO] == PackageManager.PERMISSION_GRANTED) {
+                    && perms[Manifest.permission.RECORD_AUDIO] == PackageManager.PERMISSION_GRANTED
+                    && flagPermissionForPie) {
                     presenter.onCheckPermission(true)
                 } else {
                     Toast.makeText(this, R.string.message_problem_with_permission, Toast.LENGTH_LONG)

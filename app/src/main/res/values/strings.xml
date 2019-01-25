@@ -4,6 +4,7 @@
     <string name="permission_negative_button">Cancel</string>
     <string name="message_permission_phone_state">to read phone state</string>
     <string name="message_permission_write_external_storage">to write to external storage</string>
+    <string name="message_permission_read_call_log">to read call log</string>
     <string name="start_message_permission">You need to grant access  </string>
     <string name="pref_file_name">Prefix</string>
     <string name="pref_file_name_default">Record</string>

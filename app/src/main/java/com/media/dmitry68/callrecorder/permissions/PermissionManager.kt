@@ -3,6 +3,7 @@ package com.media.dmitry68.callrecorder.permissions
 import android.Manifest
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import android.os.Build
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
@@ -27,6 +28,10 @@ class PermissionManager(private val activity: AppCompatActivity) {
             permissionsNeeded.add(
                 activity.getString(com.media.dmitry68.callrecorder.R.string.message_permission_record_audio)
             )
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
+            if (!addPermission(Manifest.permission.READ_CALL_LOG))
+                permissionsNeeded.add(activity.getString(com.media.dmitry68.callrecorder.R.string.message_permission_read_call_log))
+        }
         return permissionsList.size == 0
     }
 

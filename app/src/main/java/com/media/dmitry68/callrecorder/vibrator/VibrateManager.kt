@@ -15,9 +15,7 @@ class VibrateManager(private val context: Context) {
         if (vibrator.hasVibrator()){
             Log.d(TAG, "Start vibrator")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                val vibratePatterns = longArrayOf(0L, 400L, 800L, 600L, 800L, 800L, 800L, 1000L)//TODO: test with android O
-                val amplitudes = intArrayOf(0, 255, 0, 255, 0, 255, 0, 255)
-                val effect = VibrationEffect.createWaveform(vibratePatterns, amplitudes, -1)
+                val effect = VibrationEffect.createOneShot(mills, 10)
                 vibrator.vibrate(effect)
             } else {
                 vibrator.vibrate(mills)
